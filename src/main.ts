@@ -11,7 +11,6 @@ import { ValidationError } from 'class-validator';
 import { TransformFilterQueryStringPipe } from 'src/pipes/transform-filter-query-string-pipe.pipe';
 import { TransformInputPipe } from 'src/pipes/transform-input-pipe.pipe';
 import { AllHttpExceptionFilter } from 'src/filters/all-http-exception.filter';
-import { TypeormNotFoundExceptionFilter } from 'src/filters/typeorm-not-found-exception.filter';
 
 function setError(
   error: ValidationError,
@@ -68,24 +67,23 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new AllHttpExceptionFilter());
-  app.useGlobalFilters(new TypeormNotFoundExceptionFilter());
 
   // app.use((req, res, next) => {
   //   Logger.debug({ url: req.url, rid: req.headers.rid, body: req.body });
   //   next();
   // });
 
-  // const config = new DocumentBuilder()
-  //   .setTitle('API')
-  //   .setDescription('This is where all related service docs resided.')
-  //   .addServer('http://localhost:3000', 'Local')
-  //   .setVersion('0.1')
-  //   .addBearerAuth()
-  //   .build();
+  const config = new DocumentBuilder()
+    .setTitle('API')
+    .setDescription('This is where all related service docs resided.')
+    .addServer('http://localhost:3000', 'Local')
+    .setVersion('0.1')
+    .addBearerAuth()
+    .build();
 
-  // const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config);
 
-  // SwaggerModule.setup('/api-docs', app, document);
+  SwaggerModule.setup('/api-docs', app, document);
 
   await app.listen(3000, '0.0.0.0');
 }

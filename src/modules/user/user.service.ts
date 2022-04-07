@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { Property } from 'src/common/entities/property';
 import { HeaderSchema } from 'src/common/res';
-import { PaginationResponse } from 'src/common/res/pagination.res';
-import { FindOneOptions } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { User, UserDocument } from './entities/user.entity';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
-  async create(createUserDto: CreateUserDto) {
-    const user = User.create(createUserDto);
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-    return user.save();
+  async create(createUserDto: CreateUserDto) {
+    return this.userModel.create(createUserDto);
   }
 
   getForCreate() {
@@ -31,25 +30,21 @@ export class UserService {
     };
   }
 
-  findAll(paginationDto: PaginationDto) {
-    const queryBuilder = User.createQueryBuilder();
+  // findAll(paginationDto: PaginationDto) {
+  //   const queryBuilder = User.createQueryBuilder();
 
-    return new PaginationResponse(queryBuilder, paginationDto).getResponse();
+  //   return new PaginationResponse(queryBuilder, paginationDto).getResponse();
+  // }
+
+  findOne(id: string) {
+    return this.userModel.findById(id);
   }
 
-  findOne(id: number, options?: FindOneOptions) {
-    return User.findOneOrFail(id, options);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    return this.userModel.findByIdAndUpdate(id, updateUserDto);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await User.findOne(id);
-
-    Property.setProperties(user, updateUserDto);
-
-    return user.save();
-  }
-
-  remove(id: number) {
-    return User.delete(id);
+  remove(id: string) {
+    return this.userModel.findByIdAndRemove(id);
   }
 }

@@ -39,28 +39,28 @@ export class UserController {
     return this.service.getHeader();
   }
 
-  @Get()
-  @ApiOkResponse({ isArray: true, type: User })
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.service.findAll(paginationDto);
-  }
+  // @Get()
+  // @ApiOkResponse({ isArray: true, type: User })
+  // findAll(@Query() paginationDto: PaginationDto) {
+  //   return this.service.findAll(paginationDto);
+  // }
 
   @Get('user/:userId')
   @ApiOkResponse({ type: User })
   findOne(@Param('userId') userId: string) {
-    return this.service.findOne(+userId);
+    return this.service.findOne(userId);
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: User })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.service.update(+id, updateUserDto);
+    return this.service.update(id, updateUserDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse()
   async remove(@Param('id') id: string) {
-    await this.service.remove(+id);
+    await this.service.remove(id);
   }
 }

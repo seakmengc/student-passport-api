@@ -1,0 +1,65 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
+import { ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+
+@ApiTags('Model')
+@ApiBearerAuth()
+@Controller('model')
+@UseGuards(JwtAuthenticationGuard)
+export class ModelController {
+  constructor(private readonly service: ModelService) {}
+
+  @Post()
+  @ApiOkResponse({ type: Model })
+  create(@Body() createModelDto: CreateModelDto) {
+    return this.service.create(createModelDto);
+  }
+
+  @Get('/create')
+  @ApiOkResponse()
+  forCreate() {
+    return this.service.getForCreate();
+  }
+
+  @Get('/header')
+  @ApiOkResponse()
+  getHeader() {
+    return this.service.getHeader();
+  }
+
+  @Get()
+  @ApiOkResponse({ isArray: true, type: User })
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.service.findAll(paginationDto);
+  }
+
+  @Get('user/:userId')
+  @ApiOkResponse({ type: Model })
+  findOne(@Param('userId') userId: string) {
+    return this.service.findOne(+userId);
+  }
+
+  @Patch(':id')
+  @ApiOkResponse({ type: Model })
+  update(@Param('id') id: string, @Body() updateModelDto: UpdateModelDto) {
+    return this.service.update(+id, updateModelDto);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse()
+  async remove(@Param('id') id: string) {
+    await this.service.remove(+id);
+  }
+}

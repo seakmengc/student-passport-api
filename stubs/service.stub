@@ -1,0 +1,50 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Property } from 'src/common/entities/property';
+import { Repository } from 'typeorm';
+
+@Injectable()
+export class ModelService {
+  async create(createModelDto: CreateModelDto) {
+    const Model = Model.create(createModelDto);
+
+    return Model.save();
+  }
+
+  getForCreate() {
+    return {};
+  }
+
+  getHeader(): HeaderSchema {
+    return {
+      filter: [],
+      header: [
+        { id: 'displayName', data: 'Name' },
+        { id: 'description', data: 'Description' },
+      ],
+      sort: [],
+    };
+  }
+
+  findAll(paginationDto: PaginationDto) {
+    const queryBuilder = Model.createQueryBuilder();
+
+    return new PaginationResponse(queryBuilder, paginationDto).getResponse();
+  }
+
+  findOne(id: number, options?: FindOneOptions) {
+    return Model.findOneOrFail(id, options);
+  }
+
+  async update(id: number, updateModelDto: UpdateModelDto) {
+    const Model = await Model.findOne(id);
+
+    Property.setProperties(Model, updateModelDto);
+
+    return Model.save();
+  }
+
+  remove(id: number) {
+    return Model.delete(id);
+  }
+}

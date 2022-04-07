@@ -1,0 +1,47 @@
+image: docker:20.10.14-alpine3.15
+
+services:
+  - docker:20.10.14-dind-alpine3.15
+
+variables:
+  FF_USE_FASTZIP: 'true'
+  # These can be specified per job or per pipeline
+  ARTIFACT_COMPRESSION_LEVEL: 'fast'
+  CACHE_COMPRESSION_LEVEL: 'fast'
+  DOCKER_BUILDKIT: 1
+
+  DEV_VERSION: 0.1_dev
+  RELEASE_VERSION: '0.1'
+  CONTAINER_STAGING_API_IMAGE: $CI_REGISTRY_IMAGE/api:$DEV_VERSION
+  CONTAINER_RELEASE_API_IMAGE: $CI_REGISTRY_IMAGE/api:$RELEASE_VERSION
+
+stages:
+  - build
+  - deploy
+
+before_script:
+  - echo "$CI_JOB_TOKEN" | docker login registry.gitlab.com -u $CI_REGISTRY_USER --password-stdin
+
+build_staging:
+  stage: build
+  only:
+    - staging
+  script:
+    - docker pull $CONTAINER_STAGING_API_IMAGE || true
+    - docker build --cache-from $CONTAINER_STAGING_API_IMAGE --build-arg BUILDKIT_INLINE_CACHE=1 -t $CONTAINER_STAGING_API_IMAGE .
+    - docker push $CONTAINER_STAGING_API_IMAGE
+  # artifacts:
+  #   when: always
+  #   reports:
+  #     junit:
+  #       - app/junit.xml
+
+deploy_staging:
+  stage: deploy
+  only:
+    - staging
+  script:
+    - apk add --update --no-cache openssh sshpass
+    - sshpass -p "$SERVER_PW" scp -o StrictHostKeyChecking=no ./bin/deploy.sh $SERVER_USERNAME@$SERVER_HOST:erp_auth_api_deploy.sh
+    - sshpass -p "$SERVER_PW" ssh -tt -o StrictHostKeyChecking=no "$SERVER_USERNAME"@"$SERVER_HOST" "echo $CI_JOB_TOKEN | docker login registry.gitlab.com -u $CI_REGISTRY_USER --password-stdin && docker pull $CONTAINER_STAGING_API_IMAGE && bash erp_auth_api_deploy.sh $CONTAINER_STAGING_API_IMAGE && exit"
+    - echo Deployed...

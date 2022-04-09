@@ -29,7 +29,7 @@ import { LoggedInResponse } from './services/authentication.service';
 import { JwtConfigService } from './services/jwt-config.service';
 import { AllowUnauth } from 'src/decorators/allow-unauth.decorator';
 import { Authenticated } from 'src/decorators/authenticated.decorator';
-import { S2S } from 'src/decorators/s2s.decorator';
+import * as passport from 'passport';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -52,6 +52,10 @@ export class AuthController {
     @Res({ passthrough: true }) res: FastifyReply,
     @Body() loginDto: LoginDto,
   ) {
+    passport.authenticate('jwt', (...args) => {
+      console.log('jwt', args);
+    });
+
     const tokens = await this.authService.login(loginDto);
 
     Cookie.setRefreshTokenCookie(
@@ -120,7 +124,6 @@ export class AuthController {
 
   @Get('/public-key')
   @AllowUnauth()
-  @S2S()
   async getPublicKey() {
     const jwtConfigService = this.moduleRef.get(JwtConfigService);
 

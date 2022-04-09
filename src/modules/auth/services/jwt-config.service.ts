@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnApplicationBootstrap,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtSignOptions, JwtVerifyOptions } from '@nestjs/jwt';
 import { Algorithm } from 'jsonwebtoken';
@@ -8,17 +13,19 @@ import { readFile, writeFile } from 'fs/promises';
 import { resolve } from 'path';
 
 @Injectable()
-export class JwtConfigService implements OnApplicationBootstrap {
+export class JwtConfigService implements OnModuleInit {
   public algo: Algorithm = 'RS256';
   public publicKey: string;
   public privateKey: string;
 
   constructor(private readonly configService: ConfigService) {}
 
-  async onApplicationBootstrap() {
-    Logger.log('onApplicationBootstrap', 'JwtConfigService');
+  async onModuleInit() {
+    Logger.log('onModuleInit', 'JwtConfigService');
+
     await this.generateKeysIfNotExists();
-    Logger.log('onApplicationBootstrap ended', 'JwtConfigService');
+
+    Logger.log('onModuleInit ended', 'JwtConfigService');
   }
 
   createSignatureJwtOptions(): JwtSignOptions {
@@ -80,7 +87,9 @@ export class JwtConfigService implements OnApplicationBootstrap {
       this.publicKey = publicBuf.toString();
 
       return;
-    } catch (err) {}
+    } catch (err) {
+      Logger.error(err);
+    }
 
     const response = await promisify(generateKeyPair)('rsa', {
       modulusLength: 2048,

@@ -14,7 +14,10 @@ import { AuthId } from 'src/decorators/auth-id.decorator';
 import { UploadService } from './upload.service';
 import { Response } from 'express';
 import { AllowUnauth } from 'src/decorators/allow-unauth.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Upload')
+@ApiBearerAuth()
 @Controller('upload')
 export class UploadController {
   constructor(private service: UploadService) {}

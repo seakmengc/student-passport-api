@@ -19,13 +19,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import {
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { RegisterDto } from './dto/register.dto';
 import { AuthenticationService } from '../auth/services/authentication.service';
 
+@ApiTags('User')
+@ApiBearerAuth()
 @Controller('user')
 export class UserController {
   constructor(
@@ -40,6 +44,7 @@ export class UserController {
   }
 
   @AllowUnauth()
+  @ApiCreatedResponse({ type: User })
   @Post('/register')
   publicRegister(@Body() registerDto: RegisterDto) {
     return this.service.publicRegister(registerDto);

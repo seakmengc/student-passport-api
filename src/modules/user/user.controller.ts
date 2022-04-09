@@ -1,3 +1,4 @@
+import { AllowUnauth } from './../../decorators/allow-unauth.decorator';
 import {
   Controller,
   Get,
@@ -9,22 +10,39 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
+  NotFoundException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+import { RegisterDto } from './dto/register.dto';
+import { AuthenticationService } from '../auth/services/authentication.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly service: UserService) {}
+  constructor(
+    private readonly service: UserService,
+    private readonly authenticationService: AuthenticationService,
+  ) {}
 
+  @ApiCreatedResponse({ type: User })
   @Post()
-  @ApiOkResponse({ type: User })
   create(@Body() createUserDto: CreateUserDto) {
     return this.service.create(createUserDto);
+  }
+
+  @AllowUnauth()
+  @Post('/register')
+  publicRegister(@Body() registerDto: RegisterDto) {
+    return this.service.publicRegister(registerDto);
   }
 
   @Get('/create')
@@ -45,10 +63,18 @@ export class UserController {
   //   return this.service.findAll(paginationDto);
   // }
 
-  @Get('user/:userId')
+  @Get(':id')
   @ApiOkResponse({ type: User })
-  findOne(@Param('userId') userId: string) {
-    return this.service.findOne(userId);
+  async findOne(@Param('id') id: string) {
+    const user = await this.service.findOne(id);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    await this.setProfileUrl(user, this.authenticationService);
+
+    return user;
   }
 
   @Patch(':id')
@@ -62,5 +88,22 @@ export class UserController {
   @ApiNoContentResponse()
   async remove(@Param('id') id: string) {
     await this.service.remove(id);
+  }
+
+  private async setProfileUrl(
+    user: User,
+    authenticationService: AuthenticationService,
+  ): Promise<void> {
+    if (!user.profile) {
+      user.profileUrl = `https://avatars.dicebear.com/api/avataaars/${user._id}.svg`;
+      return;
+    }
+
+    const signature = await authenticationService.generateSignatureForUpload(
+      user.profile?._id,
+    );
+
+    user.profileUrl =
+      process.env.APP_URL + `/upload/${user.profile}/file?sig=${signature}`;
   }
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -8,6 +8,10 @@ import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import * as paginator from 'mongoose-paginate-v2';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { MulterModule } from '@nestjs/platform-express';
+import { UploadModule } from './modules/upload/upload.module';
+import { JwtAuthenticationGuard } from './guards/jwt-authentication.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { ResetPasswordModule } from './modules/reset-password/reset-password.module';
 
 @Module({
   imports: [
@@ -20,8 +24,15 @@ import { MulterModule } from '@nestjs/platform-express';
       useFactory: (configService: ConfigService) => {
         return {
           uri: configService.get('DB_URI'),
+          useNewUrlParser: true,
+          autoCreate: true,
+          autoIndex: false,
+          noDelay: true,
           connectionFactory: (connection) => {
             connection.plugin(paginator);
+
+            Logger.log('Connected', 'Mongoose');
+
             return connection;
           },
         } as MongooseModuleOptions;
@@ -33,12 +44,23 @@ import { MulterModule } from '@nestjs/platform-express';
     }),
     MulterModule.register({
       dest: './storage/upload',
+      limits: {
+        fileSize: 1_000_000, //1MB
+        files: 1,
+      },
     }),
     UserModule,
     AuthModule,
-    // ResetPasswordModule,
+    ResetPasswordModule,
+    UploadModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthenticationGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -9,12 +9,14 @@ import {
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from '../auth/services/jwt-config.service';
 import { NotificationProxy } from 'src/common/providers/notification-proxy.provider';
+import { User, UserSchema } from '../user/entities/user.entity';
 
 @Module({
   imports: [
     JwtModule.register({}),
     MongooseModule.forFeature([
       { name: ResetPassword.name, schema: ResetPasswordSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [ResetPasswordController],

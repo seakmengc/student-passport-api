@@ -5,6 +5,10 @@ import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 @Injectable()
 export class TransformInputPipe implements PipeTransform {
   transform(value: any, metadata: ArgumentMetadata) {
+    if (value === undefined || value === null || metadata.type !== 'body') {
+      return value;
+    }
+
     //in case a single param access
     if (metadata.data) {
       return value === '' ? null : value;
@@ -30,8 +34,6 @@ export class TransformInputPipe implements PipeTransform {
 
       if (value[key] === '') {
         value[key] = null;
-      } else if (!isNaN(+value[key])) {
-        value[key] = +value[key];
       }
     }
 

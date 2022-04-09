@@ -1,9 +1,14 @@
+import { hash } from 'bcryptjs';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { Upload } from 'src/modules/upload/entities/upload.entity';
+import { Student } from './student.entity';
+import { ConfigService } from '@nestjs/config';
+import { AuthenticationService } from 'src/modules/auth/services/authentication.service';
 
 export enum Role {
-  SUPER_ADMIN = 'SuperAdmin',
+  SUPER_ADMIN = 'Super Admin',
   ADMIN = 'Admin',
   STUDENT = 'Student',
 }
@@ -14,7 +19,11 @@ export class User {
 
   @ApiProperty()
   @Prop()
-  name: string;
+  firstName: string;
+
+  @ApiProperty()
+  @Prop()
+  lastName: string;
 
   @ApiProperty()
   @Prop({ unique: true })
@@ -30,8 +39,44 @@ export class User {
 
   @Prop()
   role: Role;
+
+  @ApiPropertyOptional()
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Upload })
+  profile?: Upload;
+
+  @ApiPropertyOptional()
+  @Prop({ virtual: true })
+  profileUrl?: string;
+
+  @ApiProperty()
+  @Prop({ type: Student })
+  student?: Student;
 }
 
 export type UserDocument = User & Document;
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.methods.toJSON = function () {
+  return {
+    ...this.toObject(),
+    password: undefined,
+    profile: undefined,
+  };
+};
+
+UserSchema.pre('save', async function (next) {
+  const user = this as any;
+
+  if (!user.isModified('password')) {
+    return next();
+  }
+
+  try {
+    user.password = await hash(user.password, 10);
+
+    return next();
+  } catch (e) {
+    return next(e);
+  }
+});

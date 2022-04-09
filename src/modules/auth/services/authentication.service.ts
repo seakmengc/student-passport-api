@@ -68,6 +68,13 @@ export class AuthenticationService {
     );
   }
 
+  async verifySignature(signature: string) {
+    return this.jwtService.verifyAsync(
+      signature,
+      this.jwtConfigService.createSignatureVerifyOptions(),
+    );
+  }
+
   async exchangeRefreshToken(refreshToken: string) {
     try {
       await this.jwtService.verifyAsync(
@@ -131,7 +138,7 @@ export class AuthenticationService {
     return refreshToken;
   }
 
-  async generateSignatureForUpload(uploadId: number) {
+  async generateSignatureForUpload(uploadId: string) {
     const signature = await this.jwtService.signAsync(
       { scp: uploadId.toString() },
       this.jwtConfigService.createSignatureJwtOptions(),

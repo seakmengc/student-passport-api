@@ -12,7 +12,7 @@ export class Cookie {
   ) {
     res.cookie(key, value, {
       expires,
-      signed: true,
+      signed: false,
       sameSite: 'strict',
       httpOnly: true,
       secure: !Env.isInLocal(configService),

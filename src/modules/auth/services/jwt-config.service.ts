@@ -33,7 +33,14 @@ export class JwtConfigService implements OnModuleInit {
       algorithm: 'HS256',
       expiresIn: '1d',
       notBefore: 0,
-      secret: this.configService.get('SERVICE_TOKEN'),
+      secret: this.configService.get('APP_SECRET'),
+    };
+  }
+
+  createSignatureVerifyOptions(): JwtVerifyOptions {
+    return {
+      algorithms: ['HS256'],
+      secret: this.configService.get('APP_SECRET'),
     };
   }
 

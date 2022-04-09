@@ -11,12 +11,15 @@ import { JwtConfigService } from './services/jwt-config.service';
 import { AuthenticationService } from './services/authentication.service';
 import { NotificationProxy } from 'src/common/providers/notification-proxy.provider';
 import { JwtModule } from '@nestjs/jwt';
+import { UserService } from '../user/user.service';
+import { Upload, UploadSchema } from '../upload/entities/upload.entity';
 
 @Module({
   imports: [
     JwtModule.register({}),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
+      { name: Upload.name, schema: UploadSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
   ],
@@ -25,7 +28,17 @@ import { JwtModule } from '@nestjs/jwt';
     AuthService,
     JwtConfigService,
     AuthenticationService,
+    UserService,
     NotificationProxy.register(),
+  ],
+  exports: [
+    AuthenticationService,
+    JwtModule,
+    JwtConfigService,
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: RefreshToken.name, schema: RefreshTokenSchema },
+    ]),
   ],
 })
 export class AuthModule {}

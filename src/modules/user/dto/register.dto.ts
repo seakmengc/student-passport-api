@@ -1,16 +1,15 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
-  Allow,
   IsEmail,
-  IsEnum,
-  IsOptional,
+  IsObject,
   IsString,
   Length,
-  ValidateIf,
+  ValidateNested,
 } from 'class-validator';
-import { Role } from '../entities/user.entity';
+import { CreateStudentDto } from './create-student.dto';
 
-export class CreateUserDto {
+export class RegisterDto {
   @ApiProperty()
   @Length(1, 255)
   @IsString()
@@ -32,11 +31,8 @@ export class CreateUserDto {
   password: string;
 
   @ApiProperty()
-  @IsEnum(Role)
-  role: Role;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  profile?: string;
+  @ValidateNested()
+  @IsObject()
+  @Type(() => CreateStudentDto)
+  student: CreateStudentDto;
 }

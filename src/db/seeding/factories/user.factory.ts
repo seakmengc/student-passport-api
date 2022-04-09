@@ -16,7 +16,8 @@ export class UserFactory {
   factory() {
     const user = new User();
 
-    user.name = this.faker.name.findName();
+    user.firstName = this.faker.name.firstName();
+    user.lastName = this.faker.name.lastName();
     user.email = this.faker.internet.exampleEmail();
     user.recoveryEmail = this.faker.internet.exampleEmail();
     user.password =

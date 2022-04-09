@@ -2,16 +2,16 @@ import { hash } from 'bcryptjs';
 import { Helper } from './../../../common/helper';
 import { TokenPayload } from './authentication.service';
 import { OAuth } from './../entities/oauth.entity';
-import { JwtConfigService } from 'src/modules/auth/services/jwt-config.service';
-import { AuthenticationService } from 'src/modules/auth/services/authentication.service';
+import { JwtConfigService } from 'modules/auth/services/jwt-config.service';
+import { AuthenticationService } from 'modules/auth/services/authentication.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RefreshToken } from '../entities/refresh-token.entity';
-import { getMockUser } from 'src/common/mock/user.mock';
-import { User } from 'src/modules/user/entities/user.entity';
+import { getMockUser } from 'common/mock/user.mock';
+import { User } from 'modules/user/entities/user.entity';
 
 describe('AuthenticationService', () => {
   let authenticationService: AuthenticationService;

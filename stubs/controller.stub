@@ -11,7 +11,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiNoContentResponse, ApiOkResponse } from '@nestjs/swagger';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationDto } from 'common/dto/pagination.dto';
 
 @ApiTags('Model')
 @ApiBearerAuth()

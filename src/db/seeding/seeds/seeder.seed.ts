@@ -3,9 +3,11 @@ import { UserSeeder } from './user.seed';
 import { Logger } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { resolve } from 'path';
+import { EmailSeeder } from './email.seed';
 
 async function run(): Promise<void> {
   const STORES = {
+    EmailSeeder,
     UserSeeder,
   };
 

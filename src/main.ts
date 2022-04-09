@@ -8,6 +8,7 @@ import { TransformInputPipe } from 'src/pipes/transform-input-pipe.pipe';
 import { AllHttpExceptionFilter } from 'src/filters/all-http-exception.filter';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import mongoose from 'mongoose';
 
 function setError(
   error: ValidationError,
@@ -29,6 +30,8 @@ function setError(
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  mongoose.set('debug', true);
 
   app.enableCors();
   app.use(helmet());

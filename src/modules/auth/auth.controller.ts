@@ -28,8 +28,9 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LoggedInResponse } from './services/authentication.service';
 import { JwtConfigService } from './services/jwt-config.service';
 import { AllowUnauth } from 'src/decorators/allow-unauth.decorator';
-import { Authenticated } from 'src/decorators/authenticated.decorator';
 import * as passport from 'passport';
+import { UserService } from '../user/user.service';
+import { AuthId } from 'src/decorators/auth-id.decorator';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -38,6 +39,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly userService: UserService,
     private readonly moduleRef: ModuleRef,
   ) {}
 
@@ -81,8 +83,7 @@ export class AuthController {
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (refreshTokenDto == null) {
-      refreshTokenDto = new RefreshTokenDto();
+    if (!refreshTokenDto?.refreshToken) {
       if (!req.cookies.rt) {
         throw new BadRequestException('Refresh token is required.');
       }
@@ -105,8 +106,10 @@ export class AuthController {
   @Get('me')
   @ApiBearerAuth()
   @ApiOkResponse({ type: User })
-  async me(@Authenticated() user) {
-    return user;
+  async me(@AuthId() userId: string) {
+    console.log(await this.userService.findOne(userId).populate('profile'));
+
+    return this.userService.findOne(userId).populate('profile');
   }
 
   @Delete('/logout')

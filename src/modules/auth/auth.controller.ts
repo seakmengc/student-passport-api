@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { Response, Request } from 'express';
 import {
   BadRequestException,
   Body,
@@ -49,7 +49,7 @@ export class AuthController {
   })
   @AllowUnauth()
   async login(
-    @Res({ passthrough: true }) res: FastifyReply,
+    @Res({ passthrough: true }) res: Response,
     @Body() loginDto: LoginDto,
   ) {
     passport.authenticate('jwt', (...args) => {
@@ -78,8 +78,8 @@ export class AuthController {
   @AllowUnauth()
   async refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
-    @Req() req: FastifyRequest,
-    @Res({ passthrough: true }) res: FastifyReply,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
   ) {
     if (refreshTokenDto == null) {
       refreshTokenDto = new RefreshTokenDto();
@@ -87,7 +87,7 @@ export class AuthController {
         throw new BadRequestException('Refresh token is required.');
       }
 
-      refreshTokenDto.refreshToken = req.unsignCookie(req.cookies.rt).value;
+      refreshTokenDto.refreshToken = req.cookies.rt;
     }
 
     const tokens = await this.authService.refreshToken(refreshTokenDto);
@@ -112,10 +112,7 @@ export class AuthController {
   @Delete('/logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse()
-  async logout(
-    @Req() req: FastifyRequest,
-    @Res({ passthrough: true }) res: FastifyReply,
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     await this.authService.logout(req);
 
     //clear cookie

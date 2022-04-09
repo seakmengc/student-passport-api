@@ -1,16 +1,13 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import fastifyCookie from 'fastify-cookie';
 import { AppModule } from './app.module';
 import { ValidationError } from 'class-validator';
 import { TransformFilterQueryStringPipe } from 'src/pipes/transform-filter-query-string-pipe.pipe';
 import { TransformInputPipe } from 'src/pipes/transform-input-pipe.pipe';
 import { AllHttpExceptionFilter } from 'src/filters/all-http-exception.filter';
+import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 
 function setError(
   error: ValidationError,
@@ -31,14 +28,11 @@ function setError(
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter({}),
-  );
+  const app = await NestFactory.create(AppModule);
 
-  app.register(fastifyCookie, {
-    secret: process.env.APP_SECRET, // for cookies signature
-  });
+  app.enableCors();
+  app.use(helmet());
+  app.use(cookieParser());
 
   app.useGlobalPipes(new TransformFilterQueryStringPipe());
   app.useGlobalPipes(new TransformInputPipe());

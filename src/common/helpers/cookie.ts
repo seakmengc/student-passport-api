@@ -1,16 +1,16 @@
 import { ConfigService } from '@nestjs/config';
-import { FastifyReply } from 'fastify';
+import { Response } from 'express';
 import { Env } from './env';
 
 export class Cookie {
   static setRefreshTokenCookie(
     configService: ConfigService,
-    res: FastifyReply,
+    res: Response,
     key: string,
     value: string,
     expires: Date = null,
   ) {
-    res.setCookie(key, value, {
+    res.cookie(key, value, {
       expires,
       signed: true,
       sameSite: 'strict',

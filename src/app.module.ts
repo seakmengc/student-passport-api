@@ -6,6 +6,8 @@ import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import * as paginator from 'mongoose-paginate-v2';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -24,6 +26,13 @@ import * as paginator from 'mongoose-paginate-v2';
           },
         } as MongooseModuleOptions;
       },
+    }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 100,
+    }),
+    MulterModule.register({
+      dest: './storage/upload',
     }),
     UserModule,
     AuthModule,

@@ -12,6 +12,7 @@ import { UploadModule } from './modules/upload/upload.module';
 import { JwtAuthenticationGuard } from './guards/jwt-authentication.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ResetPasswordModule } from './modules/reset-password/reset-password.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { ResetPasswordModule } from './modules/reset-password/reset-password.mod
     AuthModule,
     ResetPasswordModule,
     UploadModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [

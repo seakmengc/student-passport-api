@@ -1,6 +1,11 @@
 import { Model } from 'mongoose';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { compare, hash } from 'bcryptjs';
 import { randomInt } from 'crypto';
 import { Helper } from 'src/common/helper';
@@ -14,43 +19,39 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { NotificationProxy } from 'src/common/providers/notification-proxy.provider';
 import { InjectModel } from '@nestjs/mongoose';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class ResetPasswordService {
   private readonly hashRound: number = 10;
 
   constructor(
-    @Inject(NotificationProxy.providerName)
-    private readonly notiProxy: ClientProxy,
+    private readonly emailService: EmailService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(ResetPassword.name)
     private resetPasswordModel: Model<ResetPasswordDocument>,
   ) {}
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const user = await this.userModel.findOne({
-      where: { email: forgotPasswordDto.email },
-      select: ['id', 'recoveryEmail'],
-    });
-
-    if (!user || !user.recoveryEmail) {
-      throw new BadRequestException(
-        "Your account don't have recovery email for resetting password.",
-      );
+    const user = await this.userModel.findOne(
+      { email: forgotPasswordDto.email },
+      { id: true, email: true },
+    );
+    if (!user) {
+      throw new NotFoundException();
     }
 
     const otp = randomInt(100000, 999999);
+    await this.resetPasswordModel.deleteOne({ userId: user.id });
 
     //send email with token
-    this.notiProxy
-      .send('email.send', {
-        name: 'password.forgot',
-        to: user.recoveryEmail,
-        replacements: {
-          otp: otp,
-        },
-      })
-      .subscribe();
+    await this.emailService.sendMail({
+      name: 'password.forgot',
+      to: user.email,
+      replacements: {
+        otp: otp.toString(),
+      },
+    });
 
     const token = await hash(otp.toString(), this.hashRound);
 
@@ -60,8 +61,6 @@ export class ResetPasswordService {
       //1 hour
       expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000),
     };
-
-    await this.resetPasswordModel.findOneAndRemove({ userId: user.id });
 
     await this.resetPasswordModel.create(dataToSet);
   }

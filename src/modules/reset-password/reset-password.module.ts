@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from '../auth/services/jwt-config.service';
 import { NotificationProxy } from 'src/common/providers/notification-proxy.provider';
 import { User, UserSchema } from '../user/entities/user.entity';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -18,12 +19,9 @@ import { User, UserSchema } from '../user/entities/user.entity';
       { name: ResetPassword.name, schema: ResetPasswordSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    EmailModule,
   ],
   controllers: [ResetPasswordController],
-  providers: [
-    ResetPasswordService,
-    JwtConfigService,
-    NotificationProxy.register(),
-  ],
+  providers: [ResetPasswordService, JwtConfigService],
 })
 export class ResetPasswordModule {}

@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ResetPasswordModule } from './modules/reset-password/reset-password.module';
 import { EmailModule } from './modules/email/email.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { OfficeModule } from './modules/office/office.module';
 
 @Module({
   imports: [
@@ -46,11 +47,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       limit: 100,
     }),
     MulterModule.register({
-      dest: './storage/upload',
-      limits: {
-        fileSize: 1_000_000, //1MB
-        files: 1,
-      },
+      dest: './storage/tmp',
     }),
     ServeStaticModule.forRoot({
       rootPath: join(resolve('./'), 'storage/public'),
@@ -60,6 +57,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     UserModule,
     UploadModule,
     EmailModule,
+    OfficeModule,
   ],
   controllers: [AppController],
   providers: [

@@ -69,7 +69,7 @@ export class UserService {
   // }
 
   findOne(id: string) {
-    return this.userModel.findById(id);
+    return this.userModel.findById(id).orFail();
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

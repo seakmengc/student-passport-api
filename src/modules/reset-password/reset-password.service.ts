@@ -2,7 +2,6 @@ import { Model } from 'mongoose';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -16,8 +15,6 @@ import {
   ResetPassword,
   ResetPasswordDocument,
 } from './entities/reset-password.entity';
-import { ClientProxy } from '@nestjs/microservices';
-import { NotificationProxy } from 'src/common/providers/notification-proxy.provider';
 import { InjectModel } from '@nestjs/mongoose';
 import { EmailService } from '../email/email.service';
 
@@ -33,13 +30,9 @@ export class ResetPasswordService {
   ) {}
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const user = await this.userModel.findOne(
-      { email: forgotPasswordDto.email },
-      { id: true, email: true },
-    );
-    if (!user) {
-      throw new NotFoundException();
-    }
+    const user = await this.userModel
+      .findOne({ email: forgotPasswordDto.email }, { id: true, email: true })
+      .orFail();
 
     const otp = randomInt(100000, 999999);
     await this.resetPasswordModel.deleteOne({ userId: user.id });
@@ -66,11 +59,12 @@ export class ResetPasswordService {
   }
 
   async verifyOtp(verifyOtpDto: VerifyOtpDto) {
+    const user = await this.userModel
+      .findOne({ email: verifyOtpDto.email }, { _id: true })
+      .orFail();
+
     const resetPw = await this.resetPasswordModel.findOne({
-      relations: ['user'],
-      where: {
-        user: { email: verifyOtpDto.email },
-      },
+      user: user._id,
     });
     if (!resetPw) {
       throw new BadRequestException('OTP is invalid.');

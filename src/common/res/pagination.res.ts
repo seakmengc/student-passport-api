@@ -1,60 +1,64 @@
-// import { PaginationDto } from './../dto/pagination.dto';
-// import { paginate, PaginationTypeEnum } from 'nestjs-typeorm-paginate';
+import { PaginationDto } from './../dto/pagination.dto';
+import mongoose from 'mongoose';
 
-// export class PaginationResponse<T> {
-//   constructor(
-//     private query: SelectQueryBuilder<T>,
-//     private readonly paginationDto: PaginationDto,
-//   ) {}
+export class PaginationResponse<T> {
+  private perPage = 10;
 
-//   private parseFilter() {
-//     if (!this.paginationDto.filter) {
-//       return;
-//     }
+  constructor(
+    private query: mongoose.QueryWithHelpers<T, any, any, any>,
+    private readonly paginationDto: PaginationDto,
+  ) {}
 
-//     this.query = this.query.where(this.paginationDto.filter);
-//   }
+  private parseFilter() {
+    if (!this.paginationDto.filter) {
+      return;
+    }
 
-//   private parseSort() {
-//     if (!this.paginationDto.sort) {
-//       return;
-//     }
+    this.query = this.query.where(this.paginationDto.filter);
+  }
 
-//     this.paginationDto.sort.split(',').forEach((eachField) => {
-//       let order: 'ASC' | 'DESC';
-//       let fieldInDB: string;
-//       if (eachField.startsWith('-')) {
-//         order = 'DESC';
-//         fieldInDB = eachField.substring(1);
-//       } else {
-//         order = 'ASC';
-//         fieldInDB = eachField;
-//       }
+  private parseSort() {
+    if (!this.paginationDto.sort) {
+      return;
+    }
 
-//       this.query = this.query.orderBy(fieldInDB, order);
-//     });
-//   }
+    this.paginationDto.sort.split(',').forEach((eachField) => {
+      let order: 'ASC' | 'DESC';
+      let fieldInDB: string;
+      if (eachField.startsWith('-')) {
+        order = 'DESC';
+        fieldInDB = eachField.substring(1);
+      } else {
+        order = 'ASC';
+        fieldInDB = eachField;
+      }
 
-//   async getResponse() {
-//     this.parseFilter();
+      this.query = this.query.orderBy(fieldInDB, order);
+    });
+  }
 
-//     this.parseSort();
+  async getResponse() {
+    this.parseFilter();
 
-//     const res = await paginate<T>(this.query, {
-//       page: this.paginationDto.page,
-//       limit: 10,
-//       paginationType: PaginationTypeEnum.TAKE_AND_SKIP,
-//     });
+    this.parseSort();
 
-//     return {
-//       data: res.items,
-//       pagination: {
-//         count: res.meta.itemCount,
-//         currentPage: res.meta.currentPage,
-//         perPage: res.meta.itemsPerPage,
-//         total: res.meta.totalItems,
-//         totalPages: res.meta.totalPages,
-//       },
-//     };
-//   }
-// }
+    const res = await this.query
+      .clone()
+      .limit(this.perPage)
+      .skip((this.paginationDto.page - 1) * this.perPage)
+      .exec();
+
+    const totalItems = await this.query.clone().count();
+
+    return {
+      data: res,
+      pagination: {
+        count: res.length,
+        currentPage: this.paginationDto.page,
+        perPage: this.perPage,
+        total: totalItems,
+        totalPages: Math.ceil(totalItems / this.perPage),
+      },
+    };
+  }
+}

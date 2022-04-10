@@ -17,7 +17,6 @@ import { EmailService } from './email.service';
 @ApiTags('Email S2S')
 @Controller({
   path: 'email',
-  scope: Scope.REQUEST,
 })
 export class EmailController {
   constructor(

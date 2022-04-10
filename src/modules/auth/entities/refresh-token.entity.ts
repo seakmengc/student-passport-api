@@ -4,7 +4,7 @@ import { User } from 'src/modules/user/entities/user.entity';
 
 @Schema({ timestamps: true })
 export class RefreshToken {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
   user: User;
 
   // @ViewColumn()

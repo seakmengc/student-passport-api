@@ -1,28 +1,17 @@
+import { PaginationResponse } from './../../common/res/pagination.res';
+import { PaginationDto } from './../../common/dto/pagination.dto';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Property } from 'common/entities/property';
-import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import { CreateOfficeDto } from './dto/create-office.dto';
+import { UpdateOfficeDto } from './dto/update-office.dto';
+import { Office } from './entities/office.entity';
 
 @Injectable()
-export class ModelService {
+export class OfficeService {
   constructor(
     @InjectModel(Office.name) private model: mongoose.Model<Office>,
   ) {}
-
-  getForCreate() {
-    return {};
-  }
-
-  getHeader(): HeaderSchema {
-    return {
-      filter: [],
-      header: [
-        { id: 'displayName', data: 'Name' },
-        { id: 'description', data: 'Description' },
-      ],
-      sort: [],
-    };
-  }
 
   create(createOfficeDto: CreateOfficeDto) {
     return this.model.create(createOfficeDto);

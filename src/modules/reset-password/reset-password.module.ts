@@ -8,7 +8,6 @@ import {
 } from './entities/reset-password.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from '../auth/services/jwt-config.service';
-import { NotificationProxy } from 'src/common/providers/notification-proxy.provider';
 import { User, UserSchema } from '../user/entities/user.entity';
 import { EmailModule } from '../email/email.module';
 

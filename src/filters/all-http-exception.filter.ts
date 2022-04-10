@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import mongoose from 'mongoose';
 
 @Catch()
 export class AllHttpExceptionFilter implements ExceptionFilter {
@@ -13,6 +14,13 @@ export class AllHttpExceptionFilter implements ExceptionFilter {
     const res = host.switchToHttp().getResponse() as Response;
     if (exception['response']) {
       return res.status(exception['status']).send(exception['response']);
+    }
+
+    if (exception instanceof mongoose.Error.DocumentNotFoundError) {
+      return res.status(404).send({
+        statusCode: 404,
+        message: 'Document not found!',
+      });
     }
 
     if (!this.debug) {

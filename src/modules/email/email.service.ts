@@ -61,12 +61,11 @@ export class EmailService {
   }
 
   async sendMail(sendEmailDto: SendEmailDto) {
-    const email = await this.emailModel.findOne({
-      name: sendEmailDto.name,
-    });
-    if (!email) {
-      throw new NotFoundException();
-    }
+    const email = await this.emailModel
+      .findOne({
+        name: sendEmailDto.name,
+      })
+      .orFail();
 
     // send mail with defined transport object
     const info = await this.transporter.sendMail({

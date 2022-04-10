@@ -9,7 +9,6 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtConfigService } from './services/jwt-config.service';
 import { AuthenticationService } from './services/authentication.service';
-import { NotificationProxy } from 'src/common/providers/notification-proxy.provider';
 import { JwtModule } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { Upload, UploadSchema } from '../upload/entities/upload.entity';
@@ -29,7 +28,6 @@ import { Upload, UploadSchema } from '../upload/entities/upload.entity';
     JwtConfigService,
     AuthenticationService,
     UserService,
-    NotificationProxy.register(),
   ],
   exports: [
     AuthenticationService,

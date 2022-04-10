@@ -85,16 +85,13 @@ export class AuthenticationService {
       throw new BadRequestException('Session is expired.');
     }
 
-    const model = await this.refreshTokenModel.findOne({
-      where: {
+    const model = await this.refreshTokenModel
+      .findOne({
         tokenHash: Helper.getSHA2Hash(refreshToken),
         revokedAt: null,
-      },
-      relations: ['user', 'user.roles'],
-    });
-    if (!model) {
-      throw new NotFoundException();
-    }
+      })
+      .populate('user')
+      .orFail();
 
     const tokens = await this.generateTokens(model.user as User);
 

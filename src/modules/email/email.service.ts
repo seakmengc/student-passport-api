@@ -37,7 +37,11 @@ export class EmailService {
       .toString()
       .replace(
         this.createRegex(['logo_url']),
-        configService.get('API_GATEWAY_URL') + '/img/logo.png',
+        configService.get('APP_URL') + '/img/logo.png',
+      )
+      .replace(
+        this.createRegex(['frontend_url']),
+        configService.get('FRONTEND_URL'),
       );
 
     this.buttonHtml = readFileSync('views/templates/button.html').toString();

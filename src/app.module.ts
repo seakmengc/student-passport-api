@@ -1,3 +1,4 @@
+import { resolve, join } from 'path';
 import { Module, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -13,6 +14,7 @@ import { JwtAuthenticationGuard } from './guards/jwt-authentication.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ResetPasswordModule } from './modules/reset-password/reset-password.module';
 import { EmailModule } from './modules/email/email.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -49,6 +51,9 @@ import { EmailModule } from './modules/email/email.module';
         fileSize: 1_000_000, //1MB
         files: 1,
       },
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(resolve('./'), 'storage/public'),
     }),
     AuthModule,
     ResetPasswordModule,

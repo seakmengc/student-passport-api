@@ -707,6 +707,13 @@
     "jsonc-parser" "3.0.0"
     "pluralize" "8.0.0"
 
+"@nestjs/serve-static@^2.2.2":
+  "integrity" "sha512-3Mr+Q/npS3N7iGoF3Wd6Lj9QcjMGxbNrSqupi5cviM0IKrZ1BHl5qekW95rWYNATAVqoTmjGROAq+nKKpuUagQ=="
+  "resolved" "https://registry.npmjs.org/@nestjs/serve-static/-/serve-static-2.2.2.tgz"
+  "version" "2.2.2"
+  dependencies:
+    "path-to-regexp" "0.1.7"
+
 "@nestjs/swagger@^5.2.1":
   "integrity" "sha512-7dNa08WCnTsW/oAk3Ujde+z64JMfNm19DhpXasFR8oJp/9pggYAbYU927HpA+GJsSFJX6adjIRZsCKUqaGWznw=="
   "resolved" "https://registry.npmjs.org/@nestjs/swagger/-/swagger-5.2.1.tgz"

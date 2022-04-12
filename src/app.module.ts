@@ -16,6 +16,7 @@ import { ResetPasswordModule } from './modules/reset-password/reset-password.mod
 import { EmailModule } from './modules/email/email.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { OfficeModule } from './modules/office/office.module';
+import { QuestModule } from './modules/quest/quest.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { OfficeModule } from './modules/office/office.module';
     UploadModule,
     EmailModule,
     OfficeModule,
+    QuestModule,
   ],
   controllers: [AppController],
   providers: [

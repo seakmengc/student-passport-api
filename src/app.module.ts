@@ -17,6 +17,8 @@ import { EmailModule } from './modules/email/email.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { OfficeModule } from './modules/office/office.module';
 import { QuestModule } from './modules/quest/quest.module';
+import { StudentOfficeModule } from './modules/student-office/student-office.module';
+import { StudentQuestModule } from './modules/student-quest/student-quest.module';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { QuestModule } from './modules/quest/quest.module';
     EmailModule,
     OfficeModule,
     QuestModule,
+    StudentOfficeModule,
+    StudentQuestModule,
   ],
   controllers: [AppController],
   providers: [

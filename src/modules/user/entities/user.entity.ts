@@ -53,7 +53,7 @@ export class User {
   student?: Student;
 }
 
-export type UserDocument = User & Document;
+export type UserDocument = User & mongoose.Document;
 
 export const UserSchema = SchemaFactory.createForClass(User);
 

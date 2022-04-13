@@ -1,13 +1,15 @@
+import { Office } from 'src/modules/office/entities/office.entity';
 import { StudentOfficeService } from './../student-office/student-office.service';
 import {
   StudentQuest,
+  StudentQuestDocument,
   StudentQuestStatus,
 } from './entities/student-quest.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateStudentQuestDto } from './dto/create-student-quest.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { Quest } from '../quest/entities/quest.entity';
+import { Quest, QuestType } from '../quest/entities/quest.entity';
 import { PaginationResponse } from 'src/common/res/pagination.res';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ApproveStudentQuestDto } from './dto/approve-student-quest.dto';
@@ -18,10 +20,15 @@ export class StudentQuestService {
     @InjectModel(StudentQuest.name)
     private studentQuestModel: mongoose.Model<StudentQuest>,
     @InjectModel(Quest.name) private questModel: mongoose.Model<Quest>,
+    @InjectModel(Office.name) private officeModel: mongoose.Model<Office>,
     private studentOfficeService: StudentOfficeService,
   ) {}
 
   async getLatestQuest(userId: string, officeId: string) {
+    if (await this.officeModel.exists({ parent: officeId })) {
+      throw new BadRequestException("Can't get quest for office with units.");
+    }
+
     const studentOffice = await this.studentOfficeService.firstOrCreate(
       userId,
       officeId,
@@ -69,6 +76,9 @@ export class StudentQuestService {
         ...createStudentQuestDto,
         user: userId,
       });
+
+      //
+      await this.determineAutoGrading(curr);
     } else {
       if (curr.status !== StudentQuestStatus.REJECTED) {
         throw new BadRequestException('Quest already submitted/approved.');
@@ -127,5 +137,53 @@ export class StudentQuestService {
     }
 
     return studentQuest;
+  }
+
+  private async determineAutoGrading(studentQuest: StudentQuestDocument) {
+    if (!studentQuest.populated('quest')) {
+      await studentQuest.populate('quest');
+    }
+
+    console.log(studentQuest.quest);
+
+    if (!studentQuest.quest.autoGrading) {
+      return;
+    }
+
+    switch (studentQuest.quest.questType) {
+      case QuestType.INPUT:
+      case QuestType.MEDIA:
+        studentQuest.status = StudentQuestStatus.APPROVED;
+        break;
+      case QuestType.MCQ:
+        const correct = studentQuest.quest.possibleAnswers.find(
+          (ans) => ans.correct,
+        );
+        if (!correct) {
+          break;
+        }
+        console.log(studentQuest.answer, correct);
+
+        if (studentQuest.answer.toString() === correct._id.toString()) {
+          studentQuest.status = StudentQuestStatus.APPROVED;
+        } else {
+          studentQuest.status = StudentQuestStatus.REJECTED;
+          studentQuest.reason = 'Wrong answer.';
+        }
+        break;
+      default:
+        throw new BadRequestException('Invalid quest type.');
+    }
+
+    studentQuest.approvedAt = new Date();
+    await studentQuest.save();
+
+    if (studentQuest.status === StudentQuestStatus.APPROVED) {
+      await this.studentOfficeService.updateLastCompleted(
+        studentQuest.user._id,
+        studentQuest.quest.office._id,
+        studentQuest.quest._id,
+      );
+    }
   }
 }

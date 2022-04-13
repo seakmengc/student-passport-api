@@ -8,7 +8,7 @@ export class Upload {
   _id: string;
 
   @ApiProperty()
-  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, index: 'hashed' })
   user: string;
 
   @ApiProperty()
@@ -42,6 +42,6 @@ export class Upload {
   }
 }
 
-export type UploadDocument = Upload & Document;
+export type UploadDocument = Upload & mongoose.Document;
 
 export const UploadSchema = SchemaFactory.createForClass(Upload);

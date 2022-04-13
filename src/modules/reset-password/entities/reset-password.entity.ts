@@ -4,7 +4,11 @@ import { User } from 'src/modules/user/entities/user.entity';
 
 @Schema({ timestamps: true })
 export class ResetPassword {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: () => User,
+    index: 'hashed',
+  })
   user: User;
 
   @Prop({ unique: true })
@@ -14,6 +18,6 @@ export class ResetPassword {
   expiresAt: Date;
 }
 
-export type ResetPasswordDocument = ResetPassword & Document;
+export type ResetPasswordDocument = ResetPassword & mongoose.Document;
 
 export const ResetPasswordSchema = SchemaFactory.createForClass(ResetPassword);

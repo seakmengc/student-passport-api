@@ -13,6 +13,8 @@ import { StudentQuestController } from './student-quest.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Quest, QuestSchema } from '../quest/entities/quest.entity';
 import { StudentOfficeModule } from '../student-office/student-office.module';
+import { Office, OfficeSchema } from '../office/entities/office.entity';
+import { User, UserSchema } from '../user/entities/user.entity';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { StudentOfficeModule } from '../student-office/student-office.module';
       { name: StudentQuest.name, schema: StudentQuestSchema },
       { name: StudentOffice.name, schema: StudentOfficeSchema },
       { name: Quest.name, schema: QuestSchema },
+      { name: Office.name, schema: OfficeSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     StudentOfficeModule,
   ],

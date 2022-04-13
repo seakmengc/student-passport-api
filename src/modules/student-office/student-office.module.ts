@@ -1,3 +1,8 @@
+import { User, UserSchema } from 'src/modules/user/entities/user.entity';
+import {
+  Office,
+  OfficeSchema,
+} from 'src/modules/office/entities/office.entity';
 import { Module } from '@nestjs/common';
 import { StudentOfficeService } from './student-office.service';
 import { StudentOfficeController } from './student-office.controller';
@@ -13,6 +18,8 @@ import {
     MongooseModule.forFeature([
       { name: StudentOffice.name, schema: StudentOfficeSchema },
       { name: Quest.name, schema: QuestSchema },
+      { name: Office.name, schema: OfficeSchema },
+      { name: User.name, schema: UserSchema },
     ]),
   ],
   controllers: [StudentOfficeController],

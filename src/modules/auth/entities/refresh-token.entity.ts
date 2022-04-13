@@ -4,7 +4,11 @@ import { User } from 'src/modules/user/entities/user.entity';
 
 @Schema({ timestamps: true })
 export class RefreshToken {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: () => User,
+    index: 'hashed',
+  })
   user: User;
 
   // @ViewColumn()
@@ -23,6 +27,6 @@ export class RefreshToken {
   revokedAt?: Date;
 }
 
-export type RefreshTokenDocument = RefreshToken & Document;
+export type RefreshTokenDocument = RefreshToken & mongoose.Document;
 
 export const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);

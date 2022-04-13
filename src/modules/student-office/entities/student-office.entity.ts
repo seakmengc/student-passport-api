@@ -3,7 +3,7 @@ import { Office } from './../../office/entities/office.entity';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { User } from 'src/modules/user/entities/user.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 @Schema()
 export class StudentOffice {
@@ -34,6 +34,8 @@ export class StudentOffice {
   completed: boolean;
 }
 
-export type StudentOfficeDocument = StudentOffice & Document;
+export type StudentOfficeDocument = StudentOffice & mongoose.Document;
 
 export const StudentOfficeSchema = SchemaFactory.createForClass(StudentOffice);
+
+StudentOfficeSchema.index({ user: 1, office: 1 }, { unique: true });

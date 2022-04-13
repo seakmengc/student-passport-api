@@ -13,7 +13,11 @@ export enum QuestType {
 export class Quest {
   _id: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Office })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: () => Office,
+    index: 'hashed',
+  })
   office: Office;
 
   @Prop()
@@ -35,6 +39,6 @@ export class Quest {
   isActive: boolean;
 }
 
-export type QuestDocument = Quest & Document;
+export type QuestDocument = Quest & mongoose.Document;
 
 export const QuestSchema = SchemaFactory.createForClass(Quest);

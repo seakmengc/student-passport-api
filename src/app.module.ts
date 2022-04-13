@@ -33,8 +33,7 @@ import { StudentQuestModule } from './modules/student-quest/student-quest.module
           uri: configService.get('DB_URI'),
           useNewUrlParser: true,
           autoCreate: true,
-          autoIndex: false,
-          noDelay: true,
+          autoIndex: true,
           connectionFactory: (connection) => {
             connection.plugin(paginator);
 

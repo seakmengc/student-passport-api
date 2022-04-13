@@ -22,6 +22,6 @@ export class Answer {
   }
 }
 
-export type AnswerDocument = Answer & Document;
+export type AnswerDocument = Answer & mongoose.Document;
 
 export const AnswerSchema = SchemaFactory.createForClass(Answer);

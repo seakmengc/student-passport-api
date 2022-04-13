@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import mongoose from 'mongoose';
 
 @Schema()
 export class Email {
@@ -24,6 +25,6 @@ export class Email {
   footer?: string;
 }
 
-export type EmailDocument = Email & Document;
+export type EmailDocument = Email & mongoose.Document;
 
 export const EmailSchema = SchemaFactory.createForClass(Email);

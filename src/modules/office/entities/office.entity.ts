@@ -26,6 +26,6 @@ export class Office {
   stamp: Upload;
 }
 
-export type OfficeDocument = Office & Document;
+export type OfficeDocument = Office & mongoose.Document;
 
 export const OfficeSchema = SchemaFactory.createForClass(Office);

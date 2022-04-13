@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
+import { Office } from 'src/modules/office/entities/office.entity';
 
 @Schema()
 export class Student {
@@ -11,11 +13,15 @@ export class Student {
   @Prop({ default: true })
   isActive: boolean;
 
+  @ApiProperty()
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: () => Office })
+  officesCompleted: Office[];
+
   constructor(studentId: string) {
     this.studentId = studentId;
   }
 }
 
-export type StudentDocument = Student & Document;
+export type StudentDocument = Student & mongoose.Document;
 
 export const StudentSchema = SchemaFactory.createForClass(Student);

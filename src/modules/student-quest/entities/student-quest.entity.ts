@@ -18,6 +18,9 @@ export class StudentQuest {
   _id: mongoose.Types.ObjectId;
 
   @ApiProperty()
+  id: string;
+
+  @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
   user: User;
 

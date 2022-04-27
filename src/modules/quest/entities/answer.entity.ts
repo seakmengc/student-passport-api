@@ -4,8 +4,10 @@ import mongoose from 'mongoose';
 
 @Schema()
 export class Answer {
-  @ApiProperty()
   _id: mongoose.Types.ObjectId;
+
+  @ApiProperty()
+  id: string;
 
   @ApiProperty()
   @Prop()

@@ -12,6 +12,8 @@ import {
 import { OfficeService } from './office.service';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
+import { ApiOkResponse } from '@nestjs/swagger';
+import { Office } from './entities/office.entity';
 
 @Controller('office')
 export class OfficeController {
@@ -22,6 +24,7 @@ export class OfficeController {
     return this.officeService.create(createOfficeDto);
   }
 
+  @ApiOkResponse({ type: Office, isArray: true })
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.officeService.findAll(paginationDto);

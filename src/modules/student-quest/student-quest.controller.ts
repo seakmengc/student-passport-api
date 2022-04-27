@@ -1,3 +1,10 @@
+import { StudentQuest } from './entities/student-quest.entity';
+import { Quest } from 'src/modules/quest/entities/quest.entity';
+import {
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiProperty,
+} from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -22,12 +29,14 @@ export class StudentQuestController {
   constructor(private readonly studentQuestService: StudentQuestService) {}
 
   //get latest by office
+  @ApiOkResponse({ type: StudentQuest })
   @Get('office/:officeId/latest')
   getLatestQuest(@Param('officeId') officeId: string, @Req() req) {
     return this.studentQuestService.getLatestQuest(req.payload.sub, officeId);
   }
 
   //submit by quest
+  @ApiCreatedResponse({ type: StudentQuest })
   @Post()
   create(@Body() createStudentQuestDto: CreateStudentQuestDto, @Req() req) {
     return this.studentQuestService.create(

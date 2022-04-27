@@ -36,16 +36,14 @@ export class StudentQuestService {
 
     let lastId: string;
     if (studentOffice.lastCompleted) {
-      const currId = studentOffice.lastCompleted._id.toString();
-      const ind = studentOffice.quests.findIndex(
-        (q: Quest) => q._id.toString() === currId,
-      );
+      const currId = studentOffice.lastCompleted.id;
+      const ind = studentOffice.quests.findIndex((q: Quest) => q.id === currId);
 
       lastId = studentOffice.quests[ind + 1]
-        ? studentOffice.quests[ind + 1]._id
+        ? studentOffice.quests[ind + 1].id
         : null;
     } else {
-      lastId = studentOffice.quests[0]?._id ?? null;
+      lastId = studentOffice.quests[0]?.id ?? null;
     }
 
     let studentQuest: any = await this.studentQuestModel
@@ -77,7 +75,6 @@ export class StudentQuestService {
         user: userId,
       });
 
-      //
       await this.determineAutoGrading(curr);
     } else {
       if (curr.status !== StudentQuestStatus.REJECTED) {
@@ -131,8 +128,8 @@ export class StudentQuestService {
     if (approveStudentQuestDto.isApproved) {
       await this.studentOfficeService.updateLastCompleted(
         userId,
-        studentQuest.quest.office._id,
-        studentQuest.quest._id,
+        studentQuest.quest.office.id,
+        studentQuest.quest.id,
       );
     }
 
@@ -181,8 +178,8 @@ export class StudentQuestService {
     if (studentQuest.status === StudentQuestStatus.APPROVED) {
       await this.studentOfficeService.updateLastCompleted(
         studentQuest.user._id,
-        studentQuest.quest.office._id,
-        studentQuest.quest._id,
+        studentQuest.quest.office.id,
+        studentQuest.quest.id,
       );
     }
   }

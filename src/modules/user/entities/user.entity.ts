@@ -29,10 +29,6 @@ export class User {
   @Prop({ unique: true })
   email: string;
 
-  @ApiPropertyOptional()
-  @Prop()
-  recoveryEmail?: string;
-
   @ApiProperty()
   @Prop()
   password: string;

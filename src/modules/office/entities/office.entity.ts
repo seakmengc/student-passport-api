@@ -7,21 +7,25 @@ import { User } from 'src/modules/user/entities/user.entity';
 @Schema({ timestamps: true })
 export class Office {
   @ApiProperty()
-  _id: string;
+  id: string;
 
   @ApiProperty()
   @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: () => User })
   admins: User[];
 
+  @ApiProperty()
   @Prop({ unique: true })
   name: string;
 
+  @ApiProperty()
   @Prop()
   description: string;
 
+  @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Office })
   parent?: Office;
 
+  @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Upload })
   stamp: Upload;
 }

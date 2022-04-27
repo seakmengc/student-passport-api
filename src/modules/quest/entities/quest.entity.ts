@@ -2,6 +2,7 @@ import { Answer, AnswerSchema } from './answer.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Office } from 'src/modules/office/entities/office.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum QuestType {
   INPUT = 'input',
@@ -11,8 +12,10 @@ export enum QuestType {
 
 @Schema({ timestamps: true })
 export class Quest {
-  _id: string;
+  @ApiProperty()
+  id: string;
 
+  @ApiProperty()
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: () => Office,
@@ -20,21 +23,27 @@ export class Quest {
   })
   office: Office;
 
+  @ApiProperty()
   @Prop()
   quest: string;
 
+  @ApiProperty()
   @Prop()
   questType: QuestType;
 
+  @ApiProperty()
   @Prop({ type: [AnswerSchema] })
   possibleAnswers?: Answer[];
 
+  @ApiProperty()
   @Prop({ min: 1 })
   order: number;
 
+  @ApiProperty()
   @Prop()
   autoGrading: boolean;
 
+  @ApiProperty()
   @Prop({ default: true })
   isActive: boolean;
 }

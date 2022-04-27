@@ -10,6 +10,9 @@ export class StudentOffice {
   _id: mongoose.Types.ObjectId;
 
   @ApiProperty()
+  id: string;
+
+  @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
   user: User;
 

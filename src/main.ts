@@ -73,7 +73,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('API')
     .setDescription('This is where all related service docs resided.')
-    .addServer('http://localhost:3000', 'Local')
+    .addServer('http://localhost:8000', 'Local')
     .setVersion('0.1')
     .addBearerAuth()
     .build();
@@ -82,6 +82,6 @@ async function bootstrap() {
 
   SwaggerModule.setup('/api-docs', app, document);
 
-  await app.listen(3000, '0.0.0.0');
+  await app.listen(8000, '0.0.0.0');
 }
 bootstrap();

@@ -4,12 +4,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { HeaderSchema } from 'src/common/res';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserDocument } from './entities/user.entity';
+import { Role, User, UserDocument } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { RegisterDto } from './dto/register.dto';
 import { Student } from './entities/student.entity';
 
 import { ConfigService } from '@nestjs/config';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationResponse } from 'src/common/res/pagination.res';
 
 @Injectable()
 export class UserService {
@@ -41,7 +43,7 @@ export class UserService {
 
     const user = await this.userModel.create({
       ...registerDto,
-      student: new Student(registerDto.student.studentId),
+      role: Role.STUDENT,
     });
 
     return user;
@@ -62,14 +64,16 @@ export class UserService {
     };
   }
 
-  // findAll(paginationDto: PaginationDto) {
-  //   const queryBuilder = User.createQueryBuilder();
+  findAll(paginationDto: PaginationDto) {
+    const queryBuilder = this.userModel.find(null, null, {
+      populate: 'profile',
+    });
 
-  //   return new PaginationResponse(queryBuilder, paginationDto).getResponse();
-  // }
+    return new PaginationResponse(queryBuilder, paginationDto).getResponse();
+  }
 
-  findOne(id: string) {
-    return this.userModel.findById(id).orFail();
+  findOne(id: string, projection = null) {
+    return this.userModel.findById(id, projection).orFail();
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {

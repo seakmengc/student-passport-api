@@ -57,7 +57,8 @@ UserSchema.methods.toJSON = function () {
   return {
     ...this.toObject(),
     password: undefined,
-    profile: undefined,
+    isAdmin: this.role?.endsWith('Admin'),
+    // profile: undefined,
   };
 };
 

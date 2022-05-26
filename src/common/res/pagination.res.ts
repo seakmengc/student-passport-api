@@ -2,7 +2,7 @@ import { PaginationDto } from './../dto/pagination.dto';
 import mongoose from 'mongoose';
 
 export class PaginationResponse<T> {
-  private perPage = 10;
+  private perPage = 15;
 
   constructor(
     private query: mongoose.QueryWithHelpers<T, any, any, any>,

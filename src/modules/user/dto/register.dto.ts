@@ -30,9 +30,9 @@ export class RegisterDto {
   @IsString()
   password: string;
 
-  @ApiProperty()
-  @ValidateNested()
-  @IsObject()
-  @Type(() => CreateStudentDto)
-  student: CreateStudentDto;
+  // @ApiProperty()
+  // @ValidateNested()
+  // @IsObject()
+  // @Type(() => CreateStudentDto)
+  // student: CreateStudentDto;
 }

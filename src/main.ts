@@ -34,7 +34,7 @@ async function bootstrap() {
   mongoose.set('debug', true);
 
   app.enableCors();
-  app.use(helmet());
+  // app.use(helmet());
   app.use(cookieParser());
 
   app.useGlobalPipes(new TransformFilterQueryStringPipe());
@@ -70,17 +70,17 @@ async function bootstrap() {
   //   next();
   // });
 
-  const config = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('This is where all related service docs resided.')
-    .addServer('http://localhost:8000', 'Local')
-    .setVersion('0.1')
-    .addBearerAuth()
-    .build();
+  // const config = new DocumentBuilder()
+  //   .setTitle('API')
+  //   .setDescription('This is where all related service docs resided.')
+  //   .addServer('http://localhost:8000', 'Local')
+  //   .setVersion('0.1')
+  //   .addBearerAuth()
+  //   .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  // const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('/api-docs', app, document);
+  // SwaggerModule.setup('/api-docs', app, document);
 
   await app.listen(8000, '0.0.0.0');
 }

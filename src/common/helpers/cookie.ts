@@ -18,6 +18,7 @@ export class Cookie {
       secure: !Env.isInLocal(configService),
       path:
         (Env.isInLocal(configService) ? '' : '/ams') + '/auth/refresh-token',
+      domain: 'http://localhost:3000',
     });
   }
 }

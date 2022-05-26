@@ -1,7 +1,7 @@
 container_image=$1
-container_network=erp_network
+container_network=mynetwork
 
-service_name=erp_auth_api
+service_name=api
 
 is_service_up() {
   local service_name=$1

@@ -19,12 +19,12 @@ export class UserSeeder {
     await Promise.all([
       new UserFactory(faker).create({
         email: 'sadmin@example.com',
-        recoveryEmail: 'schheang4@paragoniu.edu.kh',
+        // recoveryEmail: 'schheang4@paragoniu.edu.kh',
         role: Role.SUPER_ADMIN,
       }),
       new UserFactory(faker).create({
         email: 'admin@example.com',
-        recoveryEmail: 'schheang4@paragoniu.edu.kh',
+        // recoveryEmail: 'schheang4@paragoniu.edu.kh',
         role: Role.ADMIN,
       }),
     ]);

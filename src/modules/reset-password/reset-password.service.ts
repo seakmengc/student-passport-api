@@ -3,6 +3,7 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { compare, hash } from 'bcryptjs';
@@ -34,7 +35,8 @@ export class ResetPasswordService {
       .findOne({ email: forgotPasswordDto.email }, { id: true, email: true })
       .orFail();
 
-    const otp = randomInt(100000, 999999);
+    const otp = randomInt(100000, 999999).toString();
+    Logger.debug({ otp });
     await this.resetPasswordModel.deleteOne({ userId: user.id });
 
     //send email with token
@@ -49,7 +51,7 @@ export class ResetPasswordService {
     const token = await hash(otp.toString(), this.hashRound);
 
     const dataToSet = {
-      userId: user.id,
+      user: user,
       token: token,
       //1 hour
       expiresAt: new Date(Date.now() + 1 * 60 * 60 * 1000),
@@ -64,8 +66,10 @@ export class ResetPasswordService {
       .orFail();
 
     const resetPw = await this.resetPasswordModel.findOne({
-      user: user._id,
+      user: user,
     });
+    console.log({ resetPw, user });
+
     if (!resetPw) {
       throw new BadRequestException('OTP is invalid.');
     }

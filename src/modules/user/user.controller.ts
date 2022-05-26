@@ -27,6 +27,7 @@ import {
 } from '@nestjs/swagger';
 import { RegisterDto } from './dto/register.dto';
 import { AuthenticationService } from '../auth/services/authentication.service';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -46,8 +47,10 @@ export class UserController {
   @AllowUnauth()
   @ApiCreatedResponse({ type: User })
   @Post('/register')
-  publicRegister(@Body() registerDto: RegisterDto) {
-    return this.service.publicRegister(registerDto);
+  async publicRegister(@Body() registerDto: RegisterDto) {
+    const user = await this.service.publicRegister(registerDto);
+
+    return this.authenticationService.generateTokens(user);
   }
 
   @Get('/create')
@@ -62,11 +65,11 @@ export class UserController {
     return this.service.getHeader();
   }
 
-  // @Get()
-  // @ApiOkResponse({ isArray: true, type: User })
-  // findAll(@Query() paginationDto: PaginationDto) {
-  //   return this.service.findAll(paginationDto);
-  // }
+  @Get()
+  @ApiOkResponse({ isArray: true, type: User })
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.service.findAll(paginationDto);
+  }
 
   @Get(':id')
   @ApiOkResponse({ type: User })

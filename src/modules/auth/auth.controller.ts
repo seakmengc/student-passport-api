@@ -107,9 +107,21 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOkResponse({ type: User })
   async me(@AuthId() userId: string) {
-    console.log(await this.userService.findOne(userId).populate('profile'));
+    const auth = await this.userService.findOne(userId);
 
-    return this.userService.findOne(userId).populate('profile');
+    return auth;
+  }
+
+  @Get('me/fields')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: User })
+  async meByFields(@AuthId() userId: string, @Req() req: Request) {
+    const auth = await this.userService.findOne(
+      userId,
+      req.query.fields?.toString()?.split(','),
+    );
+
+    return auth;
   }
 
   @Delete('/logout')

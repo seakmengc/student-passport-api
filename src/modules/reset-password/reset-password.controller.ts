@@ -15,6 +15,8 @@ export class ResetPasswordController {
   @Post('/forgot-password')
   @ApiCreatedResponse()
   async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    console.log(forgotPasswordDto);
+
     await this.resetPasswordService.forgotPassword(forgotPasswordDto);
 
     return {

@@ -1,51 +1,29 @@
 version: '3.8'
 
 services:
-  auth_api:
+  api:
     build: .
-    image: registry.gitlab.com/nxa-007/auth-api/api:0.1_dev
+    image: registry.gitlab.com/piu-student-passport/api:0.1_dev
     command: yarn start:dev
     ports:
       - 3000:3000
     depends_on:
-      - mysql
-    networks:
-      - erp_bridge
+      - mongo
     volumes:
       - ./:/app
     restart: unless-stopped
 
-  # mysql:
-  #   image: mysql:8.0.25
-  #   container_name: auth_mysql
-  #   restart: unless-stopped
-  #   tty: true
-  #   ports:
-  #     - 3306:3306
-  #   environment:
-  #     MYSQL_DATABASE: ${DB_DATABASE:-auth_api}
-  #     MYSQL_USER: ${DB_USERNAME:-auth_user}
-  #     MYSQL_PASSWORD: ${DB_PASSWORD:-password}
-  #     MYSQL_ROOT_PASSWORD: root
-  #   volumes:
-  #     - ./dockers/data/mysql:/var/lib/mysql
-  #   networks:
-  #     - erp_bridge
+  mongo:
+    image: mongo:5.0.8-focal
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./dockers/mongo/data:/data/db
 
-  # nginx:
-  #   image: nginx:1.21.6
-  #   container_name: auth_nginx
-  #   restart: always
-  #   volumes:
-  #     - ./dockers/nginx/nginx.conf:/etc/nginx/nginx.conf
-  #   ports:
-  #     - 8000:80
-  #   networks:
-  #     - auth
-  #   depends_on:
-  #     - auth_api
-
-networks:
-  erp_bridge:
-    driver: bridge
-    name: erp_bridge
+# networks:
+#   erp_bridge:
+#     driver: bridge
+#     name: erp_bridge

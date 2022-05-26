@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import {
   BadRequestException,
   ForbiddenException,
@@ -19,6 +20,7 @@ export class UploadService {
     @InjectModel(Upload.name) private uploadModel: Model<UploadDocument>,
     private storage: LocalStorage,
     private authenticationService: AuthenticationService,
+    private configService: ConfigService,
   ) {}
 
   async upload(userId: string, file: Express.Multer.File) {
@@ -26,13 +28,24 @@ export class UploadService {
 
     await this.storage.putFile(filePath, file.buffer);
 
-    return this.uploadModel.create({
+    const upload = await this.uploadModel.create({
       user: userId,
       mimeType: file.mimetype,
       name: file.originalname,
       path: filePath,
       size: file.size,
     });
+
+    const sig = await this.authenticationService.generateSignatureForUpload(
+      upload.id,
+    );
+
+    return {
+      ...upload.toJSON(),
+      url: `${this.configService.get('APP_URL')}/upload/${
+        upload.id
+      }/file?sig=${sig}`,
+    };
   }
 
   async pipeStream(id: string, signature: string, res: Response) {

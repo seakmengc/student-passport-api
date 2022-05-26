@@ -31,7 +31,7 @@ export class JwtConfigService implements OnModuleInit {
   createSignatureJwtOptions(): JwtSignOptions {
     return {
       algorithm: 'HS256',
-      expiresIn: '1d',
+      expiresIn: '1y',
       notBefore: 0,
       secret: this.configService.get('APP_SECRET'),
     };
@@ -40,6 +40,7 @@ export class JwtConfigService implements OnModuleInit {
   createSignatureVerifyOptions(): JwtVerifyOptions {
     return {
       algorithms: ['HS256'],
+      ignoreExpiration: true,
       secret: this.configService.get('APP_SECRET'),
     };
   }

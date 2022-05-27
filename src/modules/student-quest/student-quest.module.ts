@@ -15,6 +15,7 @@ import { Quest, QuestSchema } from '../quest/entities/quest.entity';
 import { StudentOfficeModule } from '../student-office/student-office.module';
 import { Office, OfficeSchema } from '../office/entities/office.entity';
 import { User, UserSchema } from '../user/entities/user.entity';
+import { StudentQuestPolicy } from './student-quest.policy';
 
 @Module({
   imports: [
@@ -28,6 +29,6 @@ import { User, UserSchema } from '../user/entities/user.entity';
     StudentOfficeModule,
   ],
   controllers: [StudentQuestController],
-  providers: [StudentQuestService, StudentOfficeService],
+  providers: [StudentQuestService, StudentOfficeService, StudentQuestPolicy],
 })
 export class StudentQuestModule {}

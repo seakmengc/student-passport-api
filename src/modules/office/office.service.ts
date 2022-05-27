@@ -18,13 +18,30 @@ export class OfficeService {
   }
 
   findAll(paginationDto: PaginationDto) {
-    const queryBuilder = this.model.find();
+    const queryBuilder = this.model.find({
+      parent: { $exists: false },
+    });
+
+    return new PaginationResponse(queryBuilder, paginationDto).getResponse();
+  }
+
+  findAllUnits(paginationDto: PaginationDto) {
+    const queryBuilder = this.model
+      .find({
+        parent: { $exists: true },
+      })
+      .sort('parent')
+      .populate('parent');
 
     return new PaginationResponse(queryBuilder, paginationDto).getResponse();
   }
 
   findOne(id: string) {
     return this.model.findById(id).orFail();
+  }
+
+  findChildren(parent: string) {
+    return this.model.find({ parent });
   }
 
   update(id: string, updateOfficeDto: UpdateOfficeDto) {

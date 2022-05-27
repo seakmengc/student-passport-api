@@ -23,12 +23,18 @@ import { HasAnyRole } from 'src/decorators/has-any-role.decorator';
 import { Role } from '../user/entities/user.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ApproveStudentQuestDto } from './dto/approve-student-quest.dto';
+import { StudentQuestPolicy } from './student-quest.policy';
+import { AuthPayload } from 'src/decorators/auth-payload.decorator';
 
 @Controller('student-quest')
 export class StudentQuestController {
-  constructor(private readonly studentQuestService: StudentQuestService) {}
+  constructor(
+    private readonly studentQuestService: StudentQuestService,
+    private readonly studentQuestPolicy: StudentQuestPolicy,
+  ) {}
 
   //get latest by office
+  @HasAnyRole(Role.STUDENT)
   @ApiOkResponse({ type: StudentQuest })
   @Get('office/:officeId/latest')
   getLatestQuest(@Param('officeId') officeId: string, @Req() req) {
@@ -36,6 +42,7 @@ export class StudentQuestController {
   }
 
   //submit by quest
+  @HasAnyRole(Role.STUDENT)
   @ApiCreatedResponse({ type: StudentQuest })
   @Post()
   create(@Body() createStudentQuestDto: CreateStudentQuestDto, @Req() req) {
@@ -60,11 +67,14 @@ export class StudentQuestController {
   //admin approve or reject
   @HasAnyRole(Role.ADMIN)
   @Put(':id/approve')
-  approve(
+  async approve(
     @Param('id') id: string,
     @Body() approveStudentQuestDto: ApproveStudentQuestDto,
     @Req() req,
+    @AuthPayload() payload,
   ) {
+    await this.studentQuestPolicy.superAdminOrOfficeAdmin(payload, id);
+
     return this.studentQuestService.approve(
       req.payload.sub,
       id,

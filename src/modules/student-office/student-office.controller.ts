@@ -1,10 +1,13 @@
+import { Role } from 'src/modules/user/entities/user.entity';
 import { StudentOffice } from 'src/modules/student-office/entities/student-office.entity';
 import { ApiTags, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import { Controller, Get, Param, Req } from '@nestjs/common';
 import { StudentOfficeService } from './student-office.service';
+import { HasAnyRole } from 'src/decorators/has-any-role.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Student Office')
+@HasAnyRole(Role.STUDENT)
 @Controller('student-office')
 export class StudentOfficeController {
   constructor(private readonly studentOfficeService: StudentOfficeService) {}

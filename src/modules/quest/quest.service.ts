@@ -32,8 +32,8 @@ export class QuestService {
     return this.model.find({ _id: { $in: ids } });
   }
 
-  findOne(id: string) {
-    return this.model.findById(id).orFail();
+  findOne(id: string, projection = null) {
+    return this.model.findById(id, projection).orFail();
   }
 
   async update(id: string, updateQuestDto: UpdateQuestDto) {

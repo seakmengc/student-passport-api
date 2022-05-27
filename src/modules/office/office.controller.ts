@@ -14,34 +14,68 @@ import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { Office } from './entities/office.entity';
+import { OfficePolicy } from './office.policy';
+import { AuthPayload } from 'src/decorators/auth-payload.decorator';
 
 @Controller('office')
 export class OfficeController {
-  constructor(private readonly officeService: OfficeService) {}
+  constructor(
+    private readonly officeService: OfficeService,
+    private readonly officePolicy: OfficePolicy,
+  ) {}
 
   @Post()
-  create(@Body() createOfficeDto: CreateOfficeDto) {
+  async create(
+    @Body() createOfficeDto: CreateOfficeDto,
+    @AuthPayload() payload,
+  ) {
+    await this.officePolicy.superAdminOrOfficeAdmin(
+      payload,
+      createOfficeDto.parent,
+    );
+
     return this.officeService.create(createOfficeDto);
   }
 
   @ApiOkResponse({ type: Office, isArray: true })
   @Get()
-  findAll(@Query() paginationDto: PaginationDto) {
+  async findAll(@Query() paginationDto: PaginationDto) {
     return this.officeService.findAll(paginationDto);
   }
 
+  @ApiOkResponse({ type: Office, isArray: true })
+  @Get('/unit')
+  async findAllUnits(@Query() paginationDto: PaginationDto) {
+    return this.officeService.findAllUnits(paginationDto);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.officeService.findOne(id).populate('admins stamp');
+  async findOne(@Param('id') id: string) {
+    const office = await this.officeService
+      .findOne(id)
+      .populate('admins stamp');
+
+    return {
+      ...office.toJSON(),
+      children: await this.officeService.findChildren(office.id),
+    };
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOfficeDto: UpdateOfficeDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateOfficeDto: UpdateOfficeDto,
+    @AuthPayload() payload,
+  ) {
+    await this.officePolicy.superAdminOrOfficeAdmin(payload, id);
+
     return this.officeService.update(id, updateOfficeDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @AuthPayload() payload) {
+    await this.officePolicy.superAdminOrOfficeAdmin(payload, id);
+
     return this.officeService.remove(id);
   }
 }

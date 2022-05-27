@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   UploadedFile,
   NotFoundException,
+  Put,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -28,6 +29,8 @@ import {
 import { RegisterDto } from './dto/register.dto';
 import { AuthenticationService } from '../auth/services/authentication.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { AuthId } from 'src/decorators/auth-id.decorator';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @ApiTags('User')
 @ApiBearerAuth()
@@ -71,6 +74,14 @@ export class UserController {
     return this.service.findAll(paginationDto);
   }
 
+  @Get('/admin')
+  @ApiOkResponse({ isArray: true, type: User })
+  getAdmins() {
+    console.log('getAdmins');
+
+    return this.service.getAdmins();
+  }
+
   @Get(':id')
   @ApiOkResponse({ type: User })
   async findOne(@Param('id') id: string) {
@@ -80,15 +91,38 @@ export class UserController {
       throw new NotFoundException();
     }
 
-    await this.setProfileUrl(user, this.authenticationService);
+    await user.setProfileUrl(this.authenticationService);
+
+    return user;
+  }
+
+  @Put('/me/password')
+  @ApiOkResponse({ type: User })
+  async updateMyPassword(
+    @AuthId() id: string,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    const user = await this.service.updatePassword(id, updatePasswordDto);
+
+    return user;
+  }
+
+  @Patch('/me')
+  @ApiOkResponse({ type: User })
+  async updateMe(@AuthId() id: string, @Body() updateUserDto: UpdateUserDto) {
+    const user = await this.service.update(id, updateUserDto);
+    await user.setProfileUrl(this.authenticationService);
 
     return user;
   }
 
   @Patch(':id')
   @ApiOkResponse({ type: User })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.service.update(id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    const user = await this.service.update(id, updateUserDto);
+    await user.setProfileUrl(this.authenticationService);
+
+    return user;
   }
 
   @Delete(':id')
@@ -96,22 +130,5 @@ export class UserController {
   @ApiNoContentResponse()
   async remove(@Param('id') id: string) {
     await this.service.remove(id);
-  }
-
-  private async setProfileUrl(
-    user: User,
-    authenticationService: AuthenticationService,
-  ): Promise<void> {
-    if (!user.profile) {
-      user.profileUrl = `https://avatars.dicebear.com/api/avataaars/${user._id}.svg`;
-      return;
-    }
-
-    const signature = await authenticationService.generateSignatureForUpload(
-      user.profile?._id,
-    );
-
-    user.profileUrl =
-      process.env.APP_URL + `/upload/${user.profile}/file?sig=${signature}`;
   }
 }

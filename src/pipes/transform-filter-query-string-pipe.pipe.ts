@@ -11,16 +11,25 @@ export class TransformFilterQueryStringPipe implements PipeTransform {
       return value;
     }
 
-    value['filter'] = {};
-    for (const key in value) {
-      if (!key.startsWith(this.prefix) || !key.endsWith(this.suffix)) {
-        continue;
-      }
-
-      value['filter'][
-        key.substring(this.prefix.length, key.length - this.suffix.length)
-      ] = value[key];
+    if (!(value['filter'] ?? null)) {
+      value['filter'] = {};
+      return value;
     }
+
+    console.log({ value });
+
+    const tmp = {};
+    for (const each of value['filter'].split('&')) {
+      const [key, val] = each.split('=', 2);
+
+      console.log(key, val);
+
+      tmp[key] = val;
+    }
+
+    value['filter'] = tmp;
+
+    console.log({ value });
 
     return value;
   }

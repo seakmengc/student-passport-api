@@ -1,3 +1,5 @@
+import { hash } from 'bcryptjs';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Upload, UploadDocument } from './../upload/entities/upload.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,6 +14,7 @@ import { Student } from './entities/student.entity';
 import { ConfigService } from '@nestjs/config';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginationResponse } from 'src/common/res/pagination.res';
+import { AuthenticationService } from '../auth/services/authentication.service';
 
 @Injectable()
 export class UserService {
@@ -19,6 +22,7 @@ export class UserService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Upload.name) private uploadModel: Model<UploadDocument>,
     private configService: ConfigService,
+    private readonly authenticationService: AuthenticationService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -70,6 +74,39 @@ export class UserService {
     });
 
     return new PaginationResponse(queryBuilder, paginationDto).getResponse();
+  }
+
+  async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
+    const user = await this.userModel
+      .findById(id, {
+        password: 1,
+      })
+      .orFail();
+
+    if (
+      !(await this.authenticationService.comparePassword(
+        updatePasswordDto.password,
+        user.password,
+      ))
+    ) {
+      throw new BadRequestException('Password does not match.');
+    }
+
+    if (updatePasswordDto.password === updatePasswordDto.newPassword) {
+      throw new BadRequestException(
+        'Current and New Password should be different.',
+      );
+    }
+
+    await user.updateOne({
+      password: await hash(updatePasswordDto.newPassword, 10),
+    });
+
+    return user;
+  }
+
+  getAdmins() {
+    return this.userModel.find({ role: { $ne: 'Student' } }).exec();
   }
 
   findOne(id: string, projection = null) {

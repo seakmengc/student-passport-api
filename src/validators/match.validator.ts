@@ -11,6 +11,7 @@ export const Match = <T>(
   type: ClassConstructor<T>,
   property: (o: T) => any,
   validationOptions?: ValidationOptions,
+  match = true,
 ) => {
   return (object: any, propertyName: string) => {
     registerDecorator({

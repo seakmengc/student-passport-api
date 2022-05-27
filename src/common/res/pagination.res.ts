@@ -2,7 +2,7 @@ import { PaginationDto } from './../dto/pagination.dto';
 import mongoose from 'mongoose';
 
 export class PaginationResponse<T> {
-  private perPage = 15;
+  private perPage = 10;
 
   constructor(
     private query: mongoose.QueryWithHelpers<T, any, any, any>,
@@ -14,7 +14,15 @@ export class PaginationResponse<T> {
       return;
     }
 
-    this.query = this.query.where(this.paginationDto.filter);
+    const filter = this.paginationDto.filter as any;
+    for (const key in filter) {
+      filter[key] = {
+        $regex: this.paginationDto.filter[key] + '.*',
+        $options: 'i',
+      };
+    }
+
+    this.query.where(filter);
   }
 
   private parseSort() {
@@ -45,7 +53,7 @@ export class PaginationResponse<T> {
     const res = await this.query
       .clone()
       .limit(this.perPage)
-      .skip((this.paginationDto.page - 1) * this.perPage)
+      .skip((+this.paginationDto.page - 1) * this.perPage)
       .exec();
 
     const totalItems = await this.query.clone().count();

@@ -60,13 +60,6 @@ export class AuthController {
 
     const tokens = await this.authService.login(loginDto);
 
-    Cookie.setRefreshTokenCookie(
-      this.configService,
-      res,
-      'rt',
-      tokens.refreshToken,
-    );
-
     return tokens;
   }
 
@@ -78,27 +71,8 @@ export class AuthController {
     description: 'Invalid or refresh token is required.',
   })
   @AllowUnauth()
-  async refreshToken(
-    @Body() refreshTokenDto: RefreshTokenDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    if (!refreshTokenDto?.refreshToken) {
-      if (!req.cookies.rt) {
-        throw new BadRequestException('Refresh token is required.');
-      }
-
-      refreshTokenDto.refreshToken = req.cookies.rt;
-    }
-
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
     const tokens = await this.authService.refreshToken(refreshTokenDto);
-
-    Cookie.setRefreshTokenCookie(
-      this.configService,
-      res,
-      'rt',
-      tokens.refreshToken,
-    );
 
     return tokens;
   }
@@ -108,6 +82,8 @@ export class AuthController {
   @ApiOkResponse({ type: User })
   async me(@AuthId() userId: string) {
     const auth = await this.userService.findOne(userId);
+
+    await auth.setProfileUrl(this.authService.authenticationService);
 
     return auth;
   }

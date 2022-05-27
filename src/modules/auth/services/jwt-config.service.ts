@@ -14,7 +14,7 @@ import { resolve } from 'path';
 
 @Injectable()
 export class JwtConfigService implements OnModuleInit {
-  public algo: Algorithm = 'RS256';
+  public algo: Algorithm = 'HS256';
   public publicKey: string;
   public privateKey: string;
 
@@ -23,7 +23,7 @@ export class JwtConfigService implements OnModuleInit {
   async onModuleInit() {
     Logger.log('onModuleInit', 'JwtConfigService');
 
-    await this.generateKeysIfNotExists();
+    // await this.generateKeysIfNotExists();
 
     Logger.log('onModuleInit ended', 'JwtConfigService');
   }
@@ -50,7 +50,8 @@ export class JwtConfigService implements OnModuleInit {
       algorithm: this.algo,
       expiresIn: '1h',
       notBefore: 0,
-      privateKey: this.privateKey,
+      // privateKey: this.privateKey,
+      secret: this.configService.get('APP_SECRET'),
     };
   }
 
@@ -59,16 +60,18 @@ export class JwtConfigService implements OnModuleInit {
       algorithms: [this.algo],
       ignoreExpiration: false,
       ignoreNotBefore: false,
-      publicKey: this.publicKey,
+      // publicKey: this.publicKey,
+      secret: this.configService.get('APP_SECRET'),
     };
   }
 
   createRefreshTokenJwtOptions(): JwtSignOptions {
     return {
       algorithm: this.algo,
-      privateKey: this.privateKey,
       expiresIn: '30d',
       notBefore: 0,
+      // privateKey: this.privateKey,
+      secret: this.configService.get('APP_SECRET'),
     };
   }
 
@@ -77,7 +80,8 @@ export class JwtConfigService implements OnModuleInit {
       algorithms: [this.algo],
       ignoreExpiration: false,
       ignoreNotBefore: false,
-      publicKey: this.privateKey,
+      // publicKey: this.privateKey,
+      secret: this.configService.get('APP_SECRET'),
     };
   }
 

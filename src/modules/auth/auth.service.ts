@@ -11,33 +11,33 @@ import { Model } from 'mongoose';
 @Injectable()
 export class AuthService {
   constructor(
-    private authenticationService: AuthenticationService,
+    public authenticationService: AuthenticationService,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async login(loginDto: LoginDto) {
-    const user = await this.userModel
-      .findOne(
-        {
-          email: loginDto.email,
-        },
-        { _id: true, password: true },
-      )
-      .orFail();
+    const user = await this.userModel.findOne(
+      {
+        email: loginDto.email,
+      },
+      { password: true, role: true },
+    );
 
     if (
+      !user ||
       !(await this.authenticationService.comparePassword(
         loginDto.password,
         user.password,
       ))
     ) {
-      throw new BadRequestException('Wrong email or password.');
+      throw new BadRequestException('Incorrect email or password.');
     }
 
     return this.authenticationService.generateTokens(user);
   }
 
   async refreshToken(refreshTokenDto: RefreshTokenDto) {
+    ``;
     if (!refreshTokenDto.refreshToken) {
       throw new BadRequestException('Refresh token is required.');
     }

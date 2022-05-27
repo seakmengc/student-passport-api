@@ -25,6 +25,9 @@ export class Office {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Office })
   parent?: Office;
 
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: () => Office })
+  children?: Office[];
+
   @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Upload })
   stamp: Upload;

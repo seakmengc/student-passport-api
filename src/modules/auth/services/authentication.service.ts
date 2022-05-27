@@ -136,7 +136,7 @@ export class AuthenticationService {
   }
 
   async generateSignatureForUpload(uploadId: string) {
-    const signature = await this.jwtService.signAsync(
+    const signature = await this.jwtService.sign(
       { scp: uploadId.toString() },
       this.jwtConfigService.createSignatureJwtOptions(),
     );

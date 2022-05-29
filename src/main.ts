@@ -9,6 +9,7 @@ import { AllHttpExceptionFilter } from 'src/filters/all-http-exception.filter';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
+import * as mongoSanitize from 'express-mongo-sanitize';
 
 function setError(
   error: ValidationError,
@@ -34,8 +35,9 @@ async function bootstrap() {
   mongoose.set('debug', true);
 
   app.enableCors();
+  app.use(mongoSanitize());
   // app.use(helmet());
-  app.use(cookieParser());
+  // app.use(cookieParser());
 
   app.useGlobalPipes(new TransformFilterQueryStringPipe());
   app.useGlobalPipes(new TransformInputPipe());

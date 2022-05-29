@@ -48,6 +48,7 @@ export class UserService {
     const user = await this.userModel.create({
       ...registerDto,
       role: Role.STUDENT,
+      student: new Student(),
     });
 
     return user;

@@ -1,3 +1,4 @@
+import { LeaderboardService } from './../leaderboard/leaderboard.service';
 import { User } from 'src/modules/user/entities/user.entity';
 import { Office } from 'src/modules/office/entities/office.entity';
 import { Quest } from './../quest/entities/quest.entity';
@@ -14,6 +15,7 @@ export class StudentOfficeService {
     @InjectModel(Quest.name) private questModel: mongoose.Model<Quest>,
     @InjectModel(Office.name) private officeModel: mongoose.Model<Office>,
     @InjectModel(User.name) private userModel: mongoose.Model<User>,
+    private readonly leaderboardService: LeaderboardService,
   ) {}
 
   async firstOrCreate(userId: string, officeId: string) {
@@ -98,6 +100,9 @@ export class StudentOfficeService {
               },
             },
           );
+
+          //increment leaderboard score
+          this.leaderboardService.increment(userId);
         }
       }
     }

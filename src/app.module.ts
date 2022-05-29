@@ -1,3 +1,4 @@
+import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
 import { resolve, join } from 'path';
 import { Module, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -19,6 +20,7 @@ import { OfficeModule } from './modules/office/office.module';
 import { QuestModule } from './modules/quest/quest.module';
 import { StudentOfficeModule } from './modules/student-office/student-office.module';
 import { StudentQuestModule } from './modules/student-quest/student-quest.module';
+import { RedisModule, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 
 @Module({
   imports: [
@@ -43,6 +45,21 @@ import { StudentQuestModule } from './modules/student-quest/student-quest.module
         } as MongooseModuleOptions;
       },
     }),
+    RedisModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          readyLog: true,
+          config: [
+            {
+              isGlobal: true,
+              url: configService.get('REDIS_URL'),
+              password: configService.get('REDIS_PASSWORD'),
+            },
+          ],
+        } as RedisModuleOptions;
+      },
+    }),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 100,
@@ -62,6 +79,7 @@ import { StudentQuestModule } from './modules/student-quest/student-quest.module
     QuestModule,
     StudentOfficeModule,
     StudentQuestModule,
+    LeaderboardModule,
   ],
   controllers: [AppController],
   providers: [

@@ -55,8 +55,11 @@ export class StudentQuestController {
   //admin index all need approval
   @HasAnyRole(Role.ADMIN)
   @Get()
-  findAllForApproval(@Body() paginationDto: PaginationDto) {
-    return this.studentQuestService.findAllForApproval(paginationDto);
+  findAllForApproval(
+    @Body() paginationDto: PaginationDto,
+    @AuthPayload() payload,
+  ) {
+    return this.studentQuestService.findAllForApproval(paginationDto, payload);
   }
 
   @Get(':id')

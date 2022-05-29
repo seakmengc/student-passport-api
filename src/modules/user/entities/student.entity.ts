@@ -7,7 +7,7 @@ import { Office } from 'src/modules/office/entities/office.entity';
 export class Student {
   @ApiProperty()
   @Prop()
-  studentId: string;
+  studentId?: string;
 
   @ApiProperty()
   @Prop({ default: true })
@@ -16,10 +16,6 @@ export class Student {
   @ApiProperty()
   @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: () => Office })
   officesCompleted: Office[];
-
-  constructor(studentId: string) {
-    this.studentId = studentId;
-  }
 }
 
 export type StudentDocument = Student & mongoose.Document;

@@ -1,3 +1,6 @@
+import { AuthModule } from './../auth/auth.module';
+import { LeaderboardService } from './../leaderboard/leaderboard.service';
+import { LeaderboardModule } from './../leaderboard/leaderboard.module';
 import { User, UserSchema } from 'src/modules/user/entities/user.entity';
 import {
   Office,
@@ -12,6 +15,7 @@ import {
   StudentOffice,
   StudentOfficeSchema,
 } from './entities/student-office.entity';
+import { AuthenticationService } from '../auth/services/authentication.service';
 
 @Module({
   imports: [
@@ -21,8 +25,10 @@ import {
       { name: Office.name, schema: OfficeSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    LeaderboardModule,
   ],
   controllers: [StudentOfficeController],
-  providers: [StudentOfficeService],
+  providers: [StudentOfficeService, LeaderboardService],
+  exports: [StudentOfficeService, LeaderboardService],
 })
 export class StudentOfficeModule {}

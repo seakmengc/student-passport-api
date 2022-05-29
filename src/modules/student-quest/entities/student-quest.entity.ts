@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import { Quest } from 'src/modules/quest/entities/quest.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import { StudentOffice } from 'src/modules/student-office/entities/student-office.entity';
+import { Office } from 'src/modules/office/entities/office.entity';
 
 export enum StudentQuestStatus {
   PENDING = 'pending',
@@ -23,6 +24,10 @@ export class StudentQuest {
   @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
   user: User;
+
+  @ApiProperty()
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Office })
+  office: Office;
 
   @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Quest })

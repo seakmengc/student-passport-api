@@ -71,11 +71,29 @@ export class UploadService {
     readStream.pipe(res);
   }
 
+  async massGenerateUrls(ids: string[]) {
+    const signature =
+      await this.authenticationService.generateSignatureForUploads(ids);
+
+    const baseUrl = this.configService.get('APP_URL');
+
+    const rtn = {};
+    for (const id of ids) {
+      rtn[id] = `${baseUrl}/upload/${id}/file?sig=${signature}`;
+    }
+
+    return rtn;
+  }
+
   private async verifySignature(signature: string, shouldHaveScope: string) {
     try {
       const payload = await this.authenticationService.verifySignature(
         signature,
       );
+
+      if ((payload.scp as string) === '*') {
+        return;
+      }
 
       const haveScope = (payload.scp as string)
         .toString()

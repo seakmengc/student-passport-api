@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 @Schema({ timestamps: true })
 export class Upload {
   _id: string;
+  id: string;
 
   @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, index: 'hashed' })

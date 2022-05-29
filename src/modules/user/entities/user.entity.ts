@@ -6,6 +6,7 @@ import { Upload } from 'src/modules/upload/entities/upload.entity';
 import { Student } from './student.entity';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticationService } from 'src/modules/auth/services/authentication.service';
+import { Inject } from '@nestjs/common';
 
 export enum Role {
   SUPER_ADMIN = 'Super Admin',
@@ -57,6 +58,8 @@ export type UserDocument = User & mongoose.Document & IUser;
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
+UserSchema.index({ role: 1, 'student.officesCompleted': -1 });
+
 UserSchema.methods.setProfileUrl = async function (
   authenticationService: AuthenticationService,
 ): Promise<void> {
@@ -84,15 +87,14 @@ UserSchema.methods.toJSON = function () {
 UserSchema.pre('save', async function (next) {
   const user = this as any;
 
-  if (!user.isModified('password')) {
-    return next();
+  if (user.isModified('password')) {
+    user.password = await hash(user.password, 10);
   }
 
   try {
-    user.password = await hash(user.password, 10);
-
-    return next();
   } catch (e) {
     return next(e);
   }
+
+  return next();
 });

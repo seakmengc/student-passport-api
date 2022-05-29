@@ -1,3 +1,5 @@
+import { Role } from 'src/modules/user/entities/user.entity';
+import { TokenPayload } from 'src/modules/auth/services/authentication.service';
 import { Office } from 'src/modules/office/entities/office.entity';
 import { StudentOfficeService } from './../student-office/student-office.service';
 import {
@@ -70,9 +72,18 @@ export class StudentQuestService {
     });
 
     if (!curr) {
+      const office = (
+        await this.questModel
+          .findById(createStudentQuestDto.quest, {
+            office: 1,
+          })
+          .orFail()
+      ).office;
+
       curr = await this.studentQuestModel.create({
         ...createStudentQuestDto,
         user: userId,
+        office,
       });
 
       await this.determineAutoGrading(curr);
@@ -93,10 +104,23 @@ export class StudentQuestService {
 
   ///ADMIN
 
-  findAllForApproval(paginationDto: PaginationDto) {
-    const queryBuilder = this.studentQuestModel.find({
+  async findAllForApproval(
+    paginationDto: PaginationDto,
+    payload: TokenPayload,
+  ) {
+    const filter = {
       status: StudentQuestStatus.PENDING,
-    });
+    };
+
+    if (payload.role !== Role.SUPER_ADMIN) {
+      filter['office'] = {
+        $in: (
+          await this.officeModel.find({ admin: payload.sub }, { _id: 1 })
+        ).map((office) => office.id),
+      };
+    }
+
+    const queryBuilder = this.studentQuestModel.find(filter).sort('id');
 
     return new PaginationResponse(queryBuilder, paginationDto).getResponse();
   }

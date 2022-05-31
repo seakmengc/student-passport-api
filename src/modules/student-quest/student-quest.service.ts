@@ -1,4 +1,4 @@
-import { Role } from 'src/modules/user/entities/user.entity';
+import { Role, User } from 'src/modules/user/entities/user.entity';
 import { TokenPayload } from 'src/modules/auth/services/authentication.service';
 import { Office } from 'src/modules/office/entities/office.entity';
 import { StudentOfficeService } from './../student-office/student-office.service';
@@ -15,6 +15,7 @@ import { Quest, QuestType } from '../quest/entities/quest.entity';
 import { PaginationResponse } from 'src/common/res/pagination.res';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ApproveStudentQuestDto } from './dto/approve-student-quest.dto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class StudentQuestService {
@@ -23,7 +24,9 @@ export class StudentQuestService {
     private studentQuestModel: mongoose.Model<StudentQuest>,
     @InjectModel(Quest.name) private questModel: mongoose.Model<Quest>,
     @InjectModel(Office.name) private officeModel: mongoose.Model<Office>,
+    @InjectModel(User.name) private userModel: mongoose.Model<User>,
     private studentOfficeService: StudentOfficeService,
+    private emailService: EmailService,
   ) {}
 
   async getLatestQuest(userId: string, officeId: string) {
@@ -155,6 +158,25 @@ export class StudentQuestService {
         studentQuest.quest.office.id,
         studentQuest.quest.id,
       );
+    } else {
+      const user = await this.userModel.findById(userId, {
+        email: 1,
+        firstName: 1,
+      });
+
+      this.emailService.sendMail({
+        name: 'quest.rejected',
+        to: user.email,
+        replacements: {
+          name: user.firstName,
+          reason: approveStudentQuestDto.reason ?? 'N/A',
+        },
+        //TODO link
+        button: {
+          name: 'Resubmit!',
+          link: '#',
+        },
+      });
     }
 
     return studentQuest;

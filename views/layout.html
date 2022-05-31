@@ -5,34 +5,51 @@
         <div style="max-width: 600px; margin: 0 auto">
           <table align="center" cellpadding="0" cellspacing="0" style="
               border-spacing: 0;
-              font-family: Helvetica, Helvetica, Arial, sans-serif;
+              font-family: Helvetica, Arial, sans-serif;
               margin: 0 auto;
               padding: 24px;
               width: 100%;
-              max-width: 500px;
             ">
             <tbody>
               <tr>
+                <td>
+                  <h1 align="center" style="color: #9155FD">Student Passport</h1>
+                </td>
+              </tr>
+              <tr>
                 <td style="text-align: left; word-break: break-word">
-                  <table style="width: 100%" width="100%">
+                  <table
+                    style="width: 100%; background-color: whitesmoke; border-top: 2px solid #9155FD; border-radius: 9px; padding: 10px;"
+                    width="100%">
                     <tbody>
                       <tr>
                         <td>
                           <table style="width: 100%;" width="100%" cellpadding="0" cellspacing="0">
                             <tbody>
+                              {{img}}
                               <tr>
-                                <td>
+                                <td align="center">
                                   <h1 style="
                                       font-size: 26px;
                                       line-height: 30px;
-                                      color: #054752;
                                       word-break: normal;
-                                      margin-bottom: 40px;
+                                      margin-top: 20px;
+                                      margin-bottom: 0px;
                                     ">
                                     {{header}}
                                   </h1>
 
-                                  <h3 style="
+                                  <p style="
+                                      font-size: 16px;
+                                      word-break: normal;
+                                      margin-top: 7px;
+                                      margin-bottom: 20px;
+                                      color: rgb(112, 112, 112);
+                                    ">
+                                    {{subheader}}
+                                  </p>
+
+                                  <h4 style="
                                       font-size: 16px;
                                       line-height: 25px;
                                       color: rgb(48, 48, 48);
@@ -40,7 +57,7 @@
                                       margin-bottom: 20px;
                                     ">
                                     {{body}}
-                                  </h3>
+                                  </h4>
                                 </td>
                               </tr>
                             </tbody>
@@ -49,86 +66,58 @@
                       </tr>
 
                       {{button_html}}
+
+                      <tr>
+                        <td>
+                          <p style="
+                            font-size: 14px;
+                            word-break: normal;
+                            text-align: center;
+                            margin-bottom: 20px;
+                            font-weight: lighter;
+                          ">
+                            {{footer}}
+                          </p>
+                        </td>
+                      </tr>
+
                     </tbody>
                   </table>
                 </td>
               </tr>
               <tr>
                 <td>
-                  <table style="margin-bottom: 20px; width: 100%" width="100%">
+                  <table style="margin-top: 20px; margin-bottom: 20px; width: 100%" width="100%">
                     <tbody>
-                      <tr>
-                        <td>
-                          <table style="width: 100%; margin-bottom: 20px" width="100%" cellpadding="0" cellspacing="0">
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <h3 style="
-                                    font-size: 16px;
-                                    line-height: 25px;
-                                    color: rgb(48, 48, 48);
-                                    word-break: normal;
-                                    margin-bottom: 20px;
-                                  ">
-                                    {{footer}}
-                                  </h3>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <table width="100%" style="margin-bottom: 20px; width: 100%">
-                            <tbody>
-                              <tr>
-                                <td width="100%">
-                                  <div style="
-                              width: 100%;
-                              height: 1px;
-                              background-color: #ddd;
-                            " color="#DDD" width="100%"></div>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </td>
-                      </tr>
-
-                      <tr style="text-align: right;">
+                      <tr align="center">
                         <td>
                           <a href="{{frontend_url}}">
                             <img src="{{logo_url}}" style="
                             display: block;
                             width: auto;
-                            height: 75px;
-                            margin-left: auto;
-                            margin-right: 0px;
-                            margin-bottom: 10px;
-                          " height="auto" />
+                            height: 50px;
+                          " />
                           </a>
                         </td>
                       </tr>
-                      <tr>
-                        <td style="text-align: right; font-size: 12px; font-family: ArialMT, Arial, sans-serif;">
+                      <tr align="center">
+                        <td style="font-size: 12px; font-family: ArialMT, Arial, sans-serif;">
                           Paragon.U Student Passport<br>
                           Phnom Penh Cambodia<br>
                           <br>
                           Copyright 2021, All Rights Reserved<br>
                         </td>
                       </tr>
-                      <tr>
-                        <td style="text-align: right">
+                      <tr align="center">
+                        <td>
                           <table style="
                       max-width: 100%;
                       width: 100%;
-                      text-align: right;
                       font-family: ArialMT, Arial, sans-serif;
                     " cellspacing="0" cellpadding="0">
                             <tbody>
                               <tr>
-                                <td style="text-align: right">
+                                <td align="center">
                                   <p style="
                               font-size: 10px;
                               color: #708c91;

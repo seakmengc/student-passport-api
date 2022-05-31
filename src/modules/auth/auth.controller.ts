@@ -31,6 +31,7 @@ import { AllowUnauth } from 'src/decorators/allow-unauth.decorator';
 import * as passport from 'passport';
 import { UserService } from '../user/user.service';
 import { AuthId } from 'src/decorators/auth-id.decorator';
+import { AuthPayload } from 'src/decorators/auth-payload.decorator';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -98,6 +99,14 @@ export class AuthController {
     );
 
     return auth;
+  }
+
+  @Get('me/role')
+  @ApiBearerAuth()
+  async myRole(@AuthPayload() payload) {
+    return {
+      role: payload.role,
+    };
   }
 
   @Delete('/logout')

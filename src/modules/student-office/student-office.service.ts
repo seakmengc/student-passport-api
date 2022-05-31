@@ -1,11 +1,15 @@
 import { LeaderboardService } from './../leaderboard/leaderboard.service';
 import { User } from 'src/modules/user/entities/user.entity';
-import { Office } from 'src/modules/office/entities/office.entity';
+import {
+  Office,
+  OfficeDocument,
+} from 'src/modules/office/entities/office.entity';
 import { Quest } from './../quest/entities/quest.entity';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { StudentOffice } from './entities/student-office.entity';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class StudentOfficeService {
@@ -16,6 +20,7 @@ export class StudentOfficeService {
     @InjectModel(Office.name) private officeModel: mongoose.Model<Office>,
     @InjectModel(User.name) private userModel: mongoose.Model<User>,
     private readonly leaderboardService: LeaderboardService,
+    private readonly emailService: EmailService,
   ) {}
 
   async firstOrCreate(userId: string, officeId: string) {
@@ -68,45 +73,58 @@ export class StudentOfficeService {
 
       await Promise.all([
         studentOffice.save(),
-        studentOffice.populate('office'),
+        studentOffice.populate('office office.parent'),
         //reward stamp
-        this.userModel.updateOne(
-          { _id: userId },
-          { $push: { 'student.officesCompleted': studentOffice } },
-        ),
+        this.rewardStamp(userId, studentOffice),
       ]);
 
       //sub-office
       if (studentOffice.office.parent) {
-        const childOffices = await this.officeModel.find({
-          parent: studentOffice.office.parent,
-        });
+        const childOffices = await this.officeModel.find(
+          {
+            parent: studentOffice.office.parent,
+          },
+          { _id: 1 },
+        );
 
         const cntCompleted = await this.studentOfficeModel.count({
-          office: { $in: childOffices.map((o) => o._id) },
+          office: { $in: childOffices.map((o) => o.id) },
           user: userId,
           completed: true,
         });
 
-        Logger.log([cntCompleted, childOffices]);
-
         if (cntCompleted === childOffices.length) {
-          //reward stamp
-          await this.userModel.updateOne(
-            { _id: userId },
-            {
-              $push: {
-                'student.officesCompleted': studentOffice.office.parent,
-              },
-            },
-          );
-
-          //increment leaderboard score
-          this.leaderboardService.increment(userId);
+          await this.rewardStamp(userId, studentOffice.office.parent);
         }
       }
     }
 
     return studentOffice;
+  }
+
+  private async rewardStamp(userId: string, office: any) {
+    //reward stamp
+    const user = await this.userModel.findByIdAndUpdate(userId, {
+      $push: {
+        'student.officesCompleted': office.id,
+      },
+    });
+
+    //increment leaderboard score
+    await this.leaderboardService.increment(userId);
+
+    this.emailService.sendMail({
+      name: 'stamp.received',
+      to: user.email,
+      replacements: {
+        name: user.firstName,
+        officeName: office.name,
+      },
+      //TODO button link
+      button: {
+        name: 'Check it out!',
+        link: '#',
+      },
+    });
   }
 }

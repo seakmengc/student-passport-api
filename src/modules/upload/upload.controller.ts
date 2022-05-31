@@ -36,10 +36,7 @@ export class UploadController {
       throw new BadRequestException();
     }
 
-    if (
-      !file.mimetype.startsWith('image/') &&
-      !file.mimetype.startsWith('video/')
-    ) {
+    if (!file.mimetype.startsWith('image/')) {
       throw new BadRequestException('Only image/video formats supported');
     }
 

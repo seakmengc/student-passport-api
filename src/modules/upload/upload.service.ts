@@ -49,9 +49,7 @@ export class UploadService {
   }
 
   async pipeStream(id: string, signature: string, res: Response) {
-    console.log(id, signature);
-
-    await this.verifySignature(signature, id);
+    // await this.verifySignature(signature, id);
 
     const upload = await this.uploadModel
       .findById(id, {

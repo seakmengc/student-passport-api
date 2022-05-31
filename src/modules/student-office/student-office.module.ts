@@ -16,6 +16,7 @@ import {
   StudentOfficeSchema,
 } from './entities/student-office.entity';
 import { AuthenticationService } from '../auth/services/authentication.service';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthenticationService } from '../auth/services/authentication.service';
       { name: User.name, schema: UserSchema },
     ]),
     LeaderboardModule,
+    EmailModule,
   ],
   controllers: [StudentOfficeController],
   providers: [StudentOfficeService, LeaderboardService],

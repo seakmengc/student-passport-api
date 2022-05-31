@@ -16,7 +16,10 @@ export class AllHttpExceptionFilter implements ExceptionFilter {
       return res.status(exception['status']).send(exception['response']);
     }
 
-    if (exception instanceof mongoose.Error.DocumentNotFoundError) {
+    if (
+      exception instanceof mongoose.Error.DocumentNotFoundError ||
+      exception instanceof mongoose.Error.CastError
+    ) {
       return res.status(404).send({
         statusCode: 404,
         message: 'Document not found!',

@@ -34,7 +34,9 @@ async function bootstrap() {
 
   mongoose.set('debug', true);
 
-  app.enableCors();
+  app.enableCors({
+    maxAge: 86400,
+  });
   app.use(mongoSanitize());
   // app.use(helmet());
   // app.use(cookieParser());

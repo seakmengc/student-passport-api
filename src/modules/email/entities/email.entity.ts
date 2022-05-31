@@ -18,6 +18,14 @@ export class Email {
 
   @Prop()
   @ApiPropertyOptional()
+  subheader?: string;
+
+  @Prop()
+  @ApiPropertyOptional()
+  img?: string;
+
+  @Prop()
+  @ApiPropertyOptional()
   body?: string;
 
   @Prop()

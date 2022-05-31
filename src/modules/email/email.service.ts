@@ -11,8 +11,10 @@ import mongoose from 'mongoose';
 
 type EmailReplacementType = {
   header: string;
+  subheader?: string;
   body: string;
-  footer: string;
+  footer?: string;
+  img?: string;
 
   button?: {
     name: string;
@@ -25,6 +27,7 @@ type EmailReplacementType = {
 export class EmailService {
   private layout: string;
   private buttonHtml: string;
+  private imgHtml: string;
 
   private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
 
@@ -45,6 +48,7 @@ export class EmailService {
       );
 
     this.buttonHtml = readFileSync('views/templates/button.html').toString();
+    this.imgHtml = readFileSync('views/templates/img.html').toString();
 
     this.transporter = nodemailer.createTransport({
       host: configService.get('MAIL_HOST'),
@@ -74,6 +78,11 @@ export class EmailService {
       subject: this.replaceAll(email.subject, sendEmailDto.replacements),
       html: this.render({
         header: this.replaceAll(email.header ?? '', sendEmailDto.replacements),
+        subheader: this.replaceAll(
+          email.subheader ?? '',
+          sendEmailDto.replacements,
+        ),
+        img: this.replaceAll(email.img ?? '', sendEmailDto.replacements),
         body: this.replaceAll(email.body ?? '', sendEmailDto.replacements),
         footer: this.replaceAll(email.footer ?? '', sendEmailDto.replacements),
         button: sendEmailDto.button,
@@ -86,7 +95,9 @@ export class EmailService {
   render(replacements: EmailReplacementType): string {
     const filteredReplacement = {
       header: filterXSS(replacements.header),
-      body: filterXSS(replacements.body),
+      subheader: filterXSS(replacements.subheader),
+      img: '',
+      body: replacements.body,
       footer: filterXSS(replacements.footer),
       button_html: '',
     } as Record<string, string>;
@@ -96,6 +107,12 @@ export class EmailService {
       filteredReplacement.button_html = this.replaceAll(this.buttonHtml, {
         button_name: replacements.button.name,
         button_link: replacements.button.link,
+      });
+    }
+
+    if (replacements.img) {
+      filteredReplacement.img = this.replaceAll(this.imgHtml, {
+        img: replacements.img,
       });
     }
 

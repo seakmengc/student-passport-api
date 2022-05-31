@@ -39,13 +39,33 @@ export class EmailController {
   @Get('view')
   async testView() {
     const content = (await this.moduleRef.create(EmailService)).render({
-      header: 'This is header',
-      body: 'This is body',
-      footer: 'This is footer',
-      button: {
-        name: 'Test',
-        link: '/',
-      },
+      // header: 'This is header',
+      // subheader: 'Verify Your Email Account',
+      // body: 'This is body',
+      // footer: 'This is footer',
+      // img: 'http://weekly.grapestheme.com/notify/img/hero-img/blue/heroFill/user-account.png',
+      // button: {
+      //   name: 'Test',
+      //   link: '/',
+      // },
+
+      // header: 'Reset Password',
+      // subheader: "We've have requested for a password reset.",
+      // body: '<p style="font-size: 27px; color: #9155FD; margin-bottom: 30px">CODE: {{otp}}</p>',
+      // img: 'http://weekly.grapestheme.com/notify/img/hero-img/blue/heroFill/user-account.png',
+      // footer:
+      //   'If you did not request for a reset, you can safely ignore this email.',
+
+      // header: 'Hi "{{name}}"',
+      // subheader: 'Verify Your Email Account',
+      // body: '<p>Thanks for joining with us. Please type in the code below to continue:</p><p style="font-size: 27px; color: #9155FD; margin-bottom: 30px">CODE: {{otp}}</p>',
+      // img: 'http://weekly.grapestheme.com/notify/img/hero-img/blue/heroFill/user-account.png',
+
+      header: 'Hi "{{name}}"',
+      subheader: 'Your afford pays off!',
+      body: 'Congratulations! You have received a stamp from <b>{{officeName}}</b>.',
+      footer: 'Go to your profile now and check it out!',
+      img: 'http://weekly.grapestheme.com/notify/img/hero-img/blue/heroFill/user-welcome.png',
     });
 
     return content;

@@ -36,7 +36,7 @@ export class QuestController {
 
   @Get('/office/:officeId')
   findByOffice(@Param('officeId') officeId: string) {
-    return this.questService.findByOffice(officeId);
+    return this.questService.findByOffice(officeId).exec();
   }
 
   @Get('/ids')

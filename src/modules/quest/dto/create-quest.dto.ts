@@ -7,6 +7,7 @@ import {
   IsMongoId,
   IsNumber,
   IsNumberString,
+  IsOptional,
   IsString,
   Min,
   ValidateIf,
@@ -36,7 +37,8 @@ export class CreateQuestDto {
   @ApiProperty()
   @Min(1)
   @IsNumber()
-  order: number;
+  @IsOptional()
+  order?: number;
 
   @ApiProperty()
   @IsBoolean()

@@ -10,9 +10,16 @@ import { Quest, QuestType } from './entities/quest.entity';
 export class QuestService {
   constructor(@InjectModel(Quest.name) private model: mongoose.Model<Quest>) {}
 
-  create(createQuestDto: CreateQuestDto) {
+  async create(createQuestDto: CreateQuestDto) {
     return this.model.create({
       ...createQuestDto,
+      order:
+        createQuestDto.order ??
+        ((
+          await this.model
+            .findOne({ office: createQuestDto.office })
+            .sort('-order')
+        )?.order ?? 0) + 1,
       possibleAnswers:
         createQuestDto.questType === QuestType.MCQ
           ? createQuestDto.possibleAnswers
@@ -25,7 +32,7 @@ export class QuestService {
   }
 
   findByOffice(officeId: string) {
-    return this.model.find({ office: officeId });
+    return this.model.find({ office: officeId, isActive: true });
   }
 
   findByIds(ids: string[]) {

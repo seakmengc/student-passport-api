@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import mongoose from 'mongoose';
+import mongodb from 'mongodb';
 
 @Catch()
 export class AllHttpExceptionFilter implements ExceptionFilter {
@@ -14,6 +15,24 @@ export class AllHttpExceptionFilter implements ExceptionFilter {
     const res = host.switchToHttp().getResponse() as Response;
     if (exception['response']) {
       return res.status(exception['status']).send(exception['response']);
+    }
+
+    //unique error
+    if (
+      exception.name === 'MongoServerError' &&
+      (exception as any)?.code === 11000
+    ) {
+      const errorsObj = (exception as any).keyPattern ?? {};
+      const errors = {};
+      for (const key in errorsObj) {
+        errors[key] = ['This is already taken.'];
+      }
+
+      return res.status(400).send({
+        statusCode: 400,
+        errors,
+        message: 'The given data was invalid.',
+      });
     }
 
     if (

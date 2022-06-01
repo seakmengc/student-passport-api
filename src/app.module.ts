@@ -21,6 +21,7 @@ import { QuestModule } from './modules/quest/quest.module';
 import { StudentOfficeModule } from './modules/student-office/student-office.module';
 import { StudentQuestModule } from './modules/student-quest/student-quest.module';
 import { RedisModule, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
+import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
 
 @Module({
   imports: [

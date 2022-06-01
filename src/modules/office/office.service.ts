@@ -13,27 +13,28 @@ export class OfficeService {
     @InjectModel(Office.name) private model: mongoose.Model<Office>,
   ) {}
 
-  create(createOfficeDto: CreateOfficeDto) {
-    return this.model.create(createOfficeDto);
+  async create(createOfficeDto: CreateOfficeDto) {
+    const office = await this.model.create(createOfficeDto);
+
+    if (office.parent) {
+      await this.model.updateOne(
+        { _id: office.parent },
+        { $push: { children: office.id } },
+      );
+    }
+
+    return office;
   }
 
-  findAll(paginationDto: PaginationDto) {
-    const queryBuilder = this.model.find({
-      parent: { $exists: false },
-    });
-
-    return new PaginationResponse(queryBuilder, paginationDto).getResponse();
+  findAll() {
+    return this.model.find({ parent: { $exists: false } });
   }
 
-  findAllUnits(paginationDto: PaginationDto) {
-    const queryBuilder = this.model
-      .find({
-        parent: { $exists: true },
-      })
+  findAllUnits() {
+    return this.model
+      .find({ parent: { $exists: true } })
       .sort('parent')
       .populate('parent');
-
-    return new PaginationResponse(queryBuilder, paginationDto).getResponse();
   }
 
   findOne(id: string) {
@@ -48,7 +49,16 @@ export class OfficeService {
     return this.model.findByIdAndUpdate(id, updateOfficeDto, { new: true });
   }
 
-  remove(id: string) {
-    return this.model.findByIdAndDelete(id, { new: true });
+  async remove(id: string) {
+    const office = await this.model.findByIdAndDelete(id, { new: true });
+
+    if (office.parent) {
+      await this.model.updateOne(
+        { _id: office.parent },
+        { $pop: { children: office.id } },
+      );
+    }
+
+    return office;
   }
 }

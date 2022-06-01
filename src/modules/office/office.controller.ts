@@ -39,26 +39,23 @@ export class OfficeController {
 
   @ApiOkResponse({ type: Office, isArray: true })
   @Get()
-  async findAll(@Query() paginationDto: PaginationDto) {
-    return this.officeService.findAll(paginationDto);
+  async findAll() {
+    return this.officeService.findAll();
   }
 
   @ApiOkResponse({ type: Office, isArray: true })
   @Get('/unit')
-  async findAllUnits(@Query() paginationDto: PaginationDto) {
-    return this.officeService.findAllUnits(paginationDto);
+  async findAllUnits() {
+    return this.officeService.findAllUnits();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const office = await this.officeService
       .findOne(id)
-      .populate('admins stamp');
+      .populate('admins stamp children');
 
-    return {
-      ...office.toJSON(),
-      children: await this.officeService.findChildren(office.id),
-    };
+    return office;
   }
 
   @Patch(':id')

@@ -123,13 +123,35 @@ export class StudentQuestService {
       };
     }
 
-    const queryBuilder = this.studentQuestModel.find(filter).sort('id');
+    const queryBuilder = this.studentQuestModel
+      .find(filter)
+      .sort('id')
+      .populate('office', 'name')
+      .populate('user', 'firstName lastName')
+      .populate('quest', 'quest');
+    // .populate({
+    //   office: {
+    //     name: 1,
+    //   },
+    //   quest: {
+    //     quest: 1,
+    //   },
+    //   user: {
+    //     firstName: 1,
+    //     student: 1,
+    //   },
+    // });
 
     return new PaginationResponse(queryBuilder, paginationDto).getResponse();
   }
 
   findOne(id: string) {
-    return this.studentQuestModel.findById(id).orFail();
+    return this.studentQuestModel
+      .findById(id)
+      .populate('office', 'name')
+      .populate('user', 'firstName lastName')
+      .populate('quest', 'quest possibleAnswers questType')
+      .orFail();
   }
 
   async approve(

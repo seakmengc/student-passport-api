@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
+  IsBoolean,
   IsMongoId,
   IsOptional,
   IsString,
@@ -21,6 +22,10 @@ export class CreateOfficeDto {
   @ApiProperty()
   @IsString()
   description: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  hasUnits: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()

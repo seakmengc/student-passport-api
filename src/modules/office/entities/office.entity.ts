@@ -22,6 +22,10 @@ export class Office {
   description: string;
 
   @ApiProperty()
+  @Prop({ default: false })
+  hasUnits: boolean;
+
+  @ApiProperty()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Office })
   parent?: Office;
 

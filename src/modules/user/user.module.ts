@@ -1,4 +1,8 @@
 import {
+  RefreshToken,
+  RefreshTokenSchema,
+} from './../auth/entities/refresh-token.entity';
+import {
   Upload,
   UploadSchema,
 } from 'src/modules/upload/entities/upload.entity';
@@ -15,6 +19,7 @@ import { AuthModule } from '../auth/auth.module';
     MongooseModule.forFeature([
       { name: Upload.name, schema: UploadSchema },
       { name: User.name, schema: UserSchema },
+      { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
     AuthModule,
   ],

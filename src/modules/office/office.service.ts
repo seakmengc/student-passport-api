@@ -16,18 +16,28 @@ export class OfficeService {
   async create(createOfficeDto: CreateOfficeDto) {
     const office = await this.model.create(createOfficeDto);
 
-    if (office.parent) {
-      await this.model.updateOne(
-        { _id: office.parent },
-        { $push: { children: office.id } },
-      );
-    }
+    // if (office.parent) {
+    //   await this.model.updateOne(
+    //     { _id: office.parent },
+    //     { $push: { children: office.id } },
+    //   );
+    // }
 
     return office;
   }
 
-  findAll() {
-    return this.model.find({ parent: { $exists: false } });
+  findAll(onlyHasUnits: boolean) {
+    const query = { parent: { $exists: false } };
+
+    if (onlyHasUnits) {
+      query['hasUnits'] = onlyHasUnits;
+    }
+
+    return this.model.find(query);
+  }
+
+  findAllOfficeHasUnits() {
+    return this.model.find({ hasUnits: true });
   }
 
   findAllUnits() {
@@ -52,12 +62,12 @@ export class OfficeService {
   async remove(id: string) {
     const office = await this.model.findByIdAndDelete(id, { new: true });
 
-    if (office.parent) {
-      await this.model.updateOne(
-        { _id: office.parent },
-        { $pop: { children: office.id } },
-      );
-    }
+    // if (office.parent) {
+    //   await this.model.updateOne(
+    //     { _id: office.parent },
+    //     { $pop: { children: office.id } },
+    //   );
+    // }
 
     return office;
   }

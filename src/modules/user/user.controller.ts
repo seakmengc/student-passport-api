@@ -125,6 +125,11 @@ export class UserController {
     return user;
   }
 
+  @Put(':id/:action')
+  async toggleBlock(@Param('id') id: string, @Param('action') action: string) {
+    await this.service.toggleBlock(id, action);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse()

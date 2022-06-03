@@ -1,3 +1,7 @@
+import {
+  RefreshToken,
+  RefreshTokenDocument,
+} from './../auth/entities/refresh-token.entity';
 import { hash } from 'bcryptjs';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { Upload, UploadDocument } from './../upload/entities/upload.entity';
@@ -15,12 +19,16 @@ import { ConfigService } from '@nestjs/config';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginationResponse } from 'src/common/res/pagination.res';
 import { AuthenticationService } from '../auth/services/authentication.service';
+import { Office, OfficeDocument } from '../office/entities/office.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Upload.name) private uploadModel: Model<UploadDocument>,
+    @InjectModel(Office.name) private officeModel: Model<OfficeDocument>,
+    @InjectModel(RefreshToken.name)
+    private refreshTokenModel: Model<RefreshTokenDocument>,
     private configService: ConfigService,
     private readonly authenticationService: AuthenticationService,
   ) {}
@@ -110,12 +118,34 @@ export class UserService {
     return this.userModel.find({ role: { $ne: 'Student' } }).exec();
   }
 
+  async getMyOfficeIds(userId: string) {
+    return (
+      await this.officeModel.find({ admins: userId }, { _id: 1 }).lean().exec()
+    ).map((office) => office._id);
+  }
+
   findOne(id: string, projection = null) {
     return this.userModel.findById(id, projection).orFail();
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     return this.userModel.findByIdAndUpdate(id, updateUserDto);
+  }
+
+  async toggleBlock(id: string, action: string) {
+    const user = await this.userModel.findByIdAndUpdate(id, {
+      isActive: action === 'block',
+    });
+
+    await this.refreshTokenModel.updateMany(
+      {
+        user: user.id,
+        revokedAt: { $exists: false },
+      },
+      { revokedAt: new Date() },
+    );
+
+    return user;
   }
 
   remove(id: string) {

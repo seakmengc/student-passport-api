@@ -1,7 +1,6 @@
 import { Response } from 'express';
 import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import mongoose from 'mongoose';
-import mongodb from 'mongodb';
 
 @Catch()
 export class AllHttpExceptionFilter implements ExceptionFilter {

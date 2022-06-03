@@ -39,8 +39,8 @@ export class OfficeController {
 
   @ApiOkResponse({ type: Office, isArray: true })
   @Get()
-  async findAll() {
-    return this.officeService.findAll();
+  async findAll(@Query('onlyHasUnits') onlyHasUnits: boolean) {
+    return this.officeService.findAll(onlyHasUnits);
   }
 
   @ApiOkResponse({ type: Office, isArray: true })
@@ -53,9 +53,12 @@ export class OfficeController {
   async findOne(@Param('id') id: string) {
     const office = await this.officeService
       .findOne(id)
-      .populate('admins stamp children');
+      .populate('admins stamp');
 
-    return office;
+    return {
+      ...office.toJSON(),
+      children: await this.officeService.findChildren(office.id),
+    };
   }
 
   @Patch(':id')

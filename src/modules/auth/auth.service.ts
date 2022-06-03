@@ -20,11 +20,12 @@ export class AuthService {
       {
         email: loginDto.email,
       },
-      { password: true, role: true },
+      { password: true, role: true, isActive: true },
     );
 
     if (
       !user ||
+      !user.isActive ||
       !(await this.authenticationService.comparePassword(
         loginDto.password,
         user.password,

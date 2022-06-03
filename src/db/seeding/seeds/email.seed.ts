@@ -51,6 +51,7 @@ export class EmailSeeder {
   ];
 
   public async run(): Promise<void> {
+    await this.EmailModel.deleteMany({});
     await this.EmailModel.create(this.data);
 
     Logger.log('Finished seeding!', 'Email Seeder');

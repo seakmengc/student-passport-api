@@ -86,7 +86,13 @@ export class AuthController {
 
     await auth.setProfileUrl(this.authService.authenticationService);
 
-    return auth;
+    return {
+      ...auth.toJSON(),
+      admins:
+        auth.role === 'Admin'
+          ? await this.userService.getMyOfficeIds(auth.id)
+          : undefined,
+    };
   }
 
   @Get('me/fields')

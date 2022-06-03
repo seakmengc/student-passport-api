@@ -17,7 +17,6 @@ export enum Role {
 export interface IUser {
   setProfileUrl(authenticationService: AuthenticationService): Promise<void>;
 }
-
 @Schema({ timestamps: true })
 export class User {
   _id: string;
@@ -38,8 +37,13 @@ export class User {
   @Prop()
   password: string;
 
+  @ApiProperty()
   @Prop()
   role: Role;
+
+  @ApiProperty()
+  @Prop({ default: true })
+  isActive: boolean;
 
   @ApiPropertyOptional()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => Upload })

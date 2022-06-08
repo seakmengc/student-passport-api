@@ -1,0 +1,3 @@
+docker service create --update-order start-first --update-failure-action rollback --rollback-order stop-first --restart-condition on-failure --restart-max-attempts 3 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root --name mongo --network mynetwork --mount type=bind,source=/docker/mongo,destination=/etc/mongo mongo:5.0.9-focal
+
+docker service create --update-order start-first --update-failure-action rollback --rollback-order stop-first --restart-condition on-failure --restart-max-attempts 3 --name redis --network mynetwork redis:7.0-alpine3.16

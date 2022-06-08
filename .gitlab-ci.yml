@@ -1,0 +1,42 @@
+image: docker:20.10.14-alpine3.15
+
+services:
+  - docker:20.10.14-dind-alpine3.15
+
+variables:
+  FF_USE_FASTZIP: 'true'
+  # These can be specified per job or per pipeline
+  ARTIFACT_COMPRESSION_LEVEL: 'fast'
+  CACHE_COMPRESSION_LEVEL: 'fast'
+  DOCKER_BUILDKIT: 1
+
+  DEV_VERSION: '0.1'
+  RELEASE_VERSION: '0.1'
+  CONTAINER_DEV_API_IMAGE: $CI_REGISTRY_IMAGE/dev:$DEV_VERSION
+  CONTAINER_RELEASE_API_IMAGE: $CI_REGISTRY_IMAGE/prod:$RELEASE_VERSION
+
+stages:
+  - build
+  - deploy
+
+before_script:
+  - echo "$CI_JOB_TOKEN" | docker login registry.gitlab.com -u $CI_REGISTRY_USER --password-stdin
+
+build_dev:
+  stage: build
+  only:
+    - master
+  script:
+    - docker pull $CONTAINER_DEV_API_IMAGE || true
+    - docker build --cache-from $CONTAINER_DEV_API_IMAGE --pull -t $CONTAINER_DEV_API_IMAGE -f ./dockers/php.dockerfile .
+    - docker push $CONTAINER_DEV_API_IMAGE
+
+deploy_dev:
+  stage: deploy
+  only:
+    - master
+  script:
+    - apk add --update --no-cache openssh sshpass
+    - sshpass -p "$SERVER_PW" scp -o StrictHostKeyChecking=no ./bin/deploy.sh $SERVER_USERNAME@$SERVER_HOST:api_deploy.sh
+    - sshpass -p "$SERVER_PW" ssh -tt -o StrictHostKeyChecking=no "$SERVER_USERNAME"@"$SERVER_HOST" "echo $CI_JOB_TOKEN | docker login registry.gitlab.com -u $CI_REGISTRY_USER --password-stdin && docker pull $CONTAINER_DEV_API_IMAGE && bash api_deploy.sh $CONTAINER_DEV_API_IMAGE && exit"
+    - echo Deployed...

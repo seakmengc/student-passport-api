@@ -25,7 +25,8 @@ export class CreateOfficeDto {
 
   @ApiProperty()
   @IsBoolean()
-  hasUnits: boolean;
+  @IsOptional()
+  hasUnits?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -9,6 +9,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { AllowUnauth } from './decorators/allow-unauth.decorator';
 
 @ApiExcludeController()
 @Controller()
@@ -21,6 +22,7 @@ export class AppController {
   }
 
   @Get('healthcheck')
+  @AllowUnauth()
   healthcheck(): string {
     return 'OK.';
   }

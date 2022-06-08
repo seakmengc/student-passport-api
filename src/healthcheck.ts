@@ -3,7 +3,7 @@ const http = require('http');
 
 const options = {
   host: 'localhost',
-  port: '3000',
+  port: '8000',
   path: '/healthcheck',
   timeout: 2000,
 };

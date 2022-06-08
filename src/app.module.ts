@@ -1,6 +1,12 @@
+import { HttpLoggerMiddleware } from './modules/telescope/middlewares/http-logger.middleware';
 import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
 import { resolve, join } from 'path';
-import { Module, Logger } from '@nestjs/common';
+import {
+  Module,
+  Logger,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -22,6 +28,7 @@ import { StudentOfficeModule } from './modules/student-office/student-office.mod
 import { StudentQuestModule } from './modules/student-quest/student-quest.module';
 import { RedisModule, RedisModuleOptions } from '@liaoliaots/nestjs-redis';
 import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
+import { TelescopeModule } from './modules/telescope/telescope.module';
 
 @Module({
   imports: [
@@ -81,6 +88,7 @@ import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
     StudentOfficeModule,
     StudentQuestModule,
     LeaderboardModule,
+    TelescopeModule,
   ],
   controllers: [AppController],
   providers: [
@@ -91,4 +99,19 @@ import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(HttpLoggerMiddleware)
+      .exclude(
+        '/healthcheck',
+        '/favicon.ico',
+        'upload/(.*)/file',
+        'telescope(.*)',
+      )
+      .forRoutes({
+        path: '*',
+        method: RequestMethod.ALL,
+      });
+  }
+}

@@ -92,6 +92,7 @@ export class AuthController {
   @Get('me/office')
   @ApiBearerAuth()
   async myOffice(@AuthId() userId: string) {
+    console.log({ userId });
     const auth = await this.userService.findOne(userId);
 
     return {

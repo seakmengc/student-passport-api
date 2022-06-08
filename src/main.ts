@@ -32,7 +32,7 @@ function setError(
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  mongoose.set('debug', true);
+  mongoose.set('debug', (process.env.NODE_ENV ?? 'local') === 'local');
 
   app.enableCors({
     maxAge: 86400,

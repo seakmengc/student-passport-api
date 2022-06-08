@@ -62,7 +62,7 @@ export class PaginationResponse<T> {
       data: res,
       pagination: {
         count: res.length,
-        currentPage: this.paginationDto.page,
+        currentPage: +this.paginationDto.page,
         perPage: this.perPage,
         total: totalItems,
         totalPages: Math.ceil(totalItems / this.perPage),

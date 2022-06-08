@@ -20,8 +20,7 @@ export class UserFactory {
     user.lastName = this.faker.name.lastName();
     user.email = this.faker.internet.exampleEmail();
     // user.recoveryEmail = this.faker.internet.exampleEmail();
-    user.password =
-      '$2b$10$MESiCbN/Gt1N484WUAq6QuRBmY4JHYz6uZsqT5jokJaYilX3B.YUy';
+    user.password = 'password';
 
     user.role = Role.STUDENT;
 

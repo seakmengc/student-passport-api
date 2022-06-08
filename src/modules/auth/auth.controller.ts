@@ -86,12 +86,19 @@ export class AuthController {
 
     await auth.setProfileUrl(this.authService.authenticationService);
 
+    return auth;
+  }
+
+  @Get('me/office')
+  @ApiBearerAuth()
+  async myOffice(@AuthId() userId: string) {
+    const auth = await this.userService.findOne(userId);
+
     return {
-      ...auth.toJSON(),
-      admins:
+      offices:
         auth.role === 'Admin'
           ? await this.userService.getMyOfficeIds(auth.id)
-          : undefined,
+          : [],
     };
   }
 
@@ -120,19 +127,5 @@ export class AuthController {
   @ApiNoContentResponse()
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     await this.authService.logout(req);
-
-    //clear cookie
-    Cookie.setRefreshTokenCookie(this.configService, res, 'rt', '', new Date());
-  }
-
-  @Get('/public-key')
-  @AllowUnauth()
-  async getPublicKey() {
-    const jwtConfigService = this.moduleRef.get(JwtConfigService);
-
-    return {
-      key: jwtConfigService.publicKey,
-      algo: jwtConfigService.algo,
-    };
   }
 }

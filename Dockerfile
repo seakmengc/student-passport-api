@@ -13,9 +13,6 @@ RUN yarn install
 
 COPY . .
 
-# test
-RUN yarn test --ci --reporters=jest-junit
-
 RUN yarn build
 
 # remove development dependencies

@@ -20,6 +20,11 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @Get('healthcheck')
+  healthcheck(): string {
+    return 'OK.';
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   testUpload(@UploadedFile() file: Express.Multer.File, @Body() body) {

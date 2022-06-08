@@ -13,22 +13,10 @@ is_service_up() {
   fi
 }
 
-up_mysql() {
-    local user=auth_user
-    local password=password
-    local db=auth_api
-
-    local api_container_id=$(docker ps -f name=erp_mysql -q | head -n1)
-
-    docker exec $api_container_id mysql -uroot -proot -e "CREATE USER IF NOT EXISTS $user@'%' IDENTIFIED BY '$password'; CREATE DATABASE IF NOT EXISTS $db; GRANT ALL ON $db.* TO $user@'%';"
-
-    echo "MySQL is UP!"
-}
-
 up_container() {
     docker service rm $service_name
     
-    docker service create --update-order start-first --update-failure-action rollback --rollback-order stop-first --restart-condition on-failure --restart-max-attempts 3 --replicas $replica --network $container_network --name $service_name $container_image
+    docker service create --update-order start-first --update-failure-action rollback --rollback-order stop-first --restart-condition on-failure --restart-max-attempts 3 --replicas $replica --network $container_network --mount type=bind,source=/docker/storage,destination=/app/storage --name $service_name $container_image
 }
 
 update_server() {
@@ -46,14 +34,32 @@ deploy() {
 
   docker network create -d overlay $container_network --attachable
 
-  up_mysql
-
   up_container $replica
 }
 
-commands() {
-  local command_to_run=("yarn seed:run:prod -s EmailSeeder")
-  # local api_container_id=$(docker ps -f name=$service_name -q | head -n1)
+determine_deployment_strategy() {  
+  if [[ $(is_service_up $container_image) = "0" ]]; then
+    echo "No server is up... use deploy strategy!"
+
+    commands=()
+    run_commands "${commands[@]}" 
+
+    deploy
+
+  else
+    echo "One server is up... use update strategy!"
+    commands=()
+
+    run_commands "${commands[@]}"
+
+    update_server
+  fi
+
+  echo "DONE !"
+}
+
+run_commands() {
+  local command_to_run=("$@")
 
   # docker exec $api_container_id yarn seed:run
   for command in "${command_to_run[@]}"; do
@@ -71,22 +77,6 @@ commands() {
   done
 
   echo "Done running commands!";
-}
-
-determine_deployment_strategy() {
-  if [[ $(is_service_up $service_name) = "0" ]]; then
-    echo "No server is up... use deploy strategy!"
-    deploy
-
-    commands
-  else
-    echo "One server is up... use update strategy!"
-    commands
-
-    update_server
-  fi
-
-  echo "DONE !"
 }
 
 # call func

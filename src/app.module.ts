@@ -26,8 +26,9 @@ import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env.local',
+      envFilePath: '.env.' + (process.env.NODE_ENV ?? 'local'),
       isGlobal: true,
+      cache: true,
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
@@ -35,7 +36,7 @@ import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
         return {
           uri: configService.get('DB_URI'),
           useNewUrlParser: true,
-          autoIndex: false,
+          autoIndex: true,
           connectionFactory: (connection) => {
             connection.plugin(paginator);
 
@@ -55,7 +56,6 @@ import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
             {
               isGlobal: true,
               url: configService.get('REDIS_URL'),
-              password: configService.get('REDIS_PASSWORD'),
             },
           ],
         } as RedisModuleOptions;
@@ -63,7 +63,7 @@ import { DbValidatorsModule } from '@youba/nestjs-dbvalidator';
     }),
     ThrottlerModule.forRoot({
       ttl: 60,
-      limit: 100,
+      limit: 300,
     }),
     MulterModule.register({
       dest: './storage/tmp',

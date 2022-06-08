@@ -19,17 +19,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm -f ./src/db/ormconfig.ts",
-    "typeorm:prod": "node ./node_modules/.bin/typeorm -f ./dist/db/ormconfig.js",
-    "schema:drop": "yarn typeorm schema:drop",
-    "schema:drop:prod": "yarn typeorm:prod schema:drop",
-    "migration:generate": "yarn typeorm migration:generate -n",
-    "migration:create": "yarn typeorm migration:create -n",
-    "migration:run": "yarn typeorm migration:run",
-    "migration:run:prod": "yarn typeorm:prod migration:run",
-    "migration:revert": "yarn typeorm migration:revert",
     "seed:run": "ts-node -r tsconfig-paths/register ./src/db/seeding/seeds/seeder.seed.ts",
-    "seed:run:prod": "node ./node_modules/typeorm-seeding/dist/cli.js --configName ./dist/db/ormconfig.js seed"
+    "seed:run:prod": "node ./dist/db/seeding/seeds/seeder.seed"
   },
   "dependencies": {
     "@faker-js/faker": "^6.1.2",

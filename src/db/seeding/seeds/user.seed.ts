@@ -18,13 +18,11 @@ export class UserSeeder {
   private async seedSuperAdminUsers() {
     await Promise.all([
       new UserFactory(faker).create({
-        email: 'sadmin@example.com',
-        // recoveryEmail: 'schheang4@paragoniu.edu.kh',
+        email: 'c.seakmeng0603@gmail.com',
         role: Role.SUPER_ADMIN,
       }),
       new UserFactory(faker).create({
-        email: 'admin@example.com',
-        // recoveryEmail: 'schheang4@paragoniu.edu.kh',
+        email: 'schheang4@paragoniu.edu.kh',
         role: Role.ADMIN,
       }),
     ]);

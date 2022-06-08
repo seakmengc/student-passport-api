@@ -48,7 +48,7 @@ determine_deployment_strategy() {
 
   else
     echo "One server is up... use update strategy!"
-    commands=()
+    commands=("yarn seed:run:prod")
 
     run_commands "${commands[@]}"
 

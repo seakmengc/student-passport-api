@@ -4,8 +4,6 @@ container_network=mynetwork
 service_name=api
 
 is_service_up() {
-  local service_name=$1
-
   if [[ -z $(docker ps -f name=$service_name -q | head -n1) ]]; then
     echo "0"
   else
@@ -38,7 +36,7 @@ deploy() {
 }
 
 determine_deployment_strategy() {  
-  if [[ $(is_service_up $container_image) = "0" ]]; then
+  if [[ $(is_service_up) = "0" ]]; then
     echo "No server is up... use deploy strategy!"
 
     commands=()

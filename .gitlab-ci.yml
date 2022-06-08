@@ -28,7 +28,7 @@ build_dev:
     - master
   script:
     - docker pull $CONTAINER_DEV_API_IMAGE || true
-    - docker build --cache-from $CONTAINER_DEV_API_IMAGE --pull -t $CONTAINER_DEV_API_IMAGE -f ./dockers/php.dockerfile .
+    - docker build --cache-from $CONTAINER_DEV_API_IMAGE --pull -t $CONTAINER_DEV_API_IMAGE .
     - docker push $CONTAINER_DEV_API_IMAGE
 
 deploy_dev:

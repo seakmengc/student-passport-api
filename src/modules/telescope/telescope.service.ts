@@ -31,7 +31,8 @@ export class TelescopeService {
   findAll(paginationDto: PaginationDto) {
     const queryBuilder = this.model
       .find()
-      .select('method path statusCode duration time');
+      .select('method path statusCode duration time')
+      .sort('-id');
 
     return new PaginationResponse(queryBuilder, paginationDto).getResponse();
   }

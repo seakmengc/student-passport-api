@@ -3,6 +3,7 @@ import { UserFactory } from '../factories/user.factory';
 import faker from '@faker-js/faker';
 import mongoose from 'mongoose';
 import { Logger } from '@nestjs/common';
+import { Student } from 'src/modules/user/entities/student.entity';
 
 export class UserSeeder {
   public async run(): Promise<void> {
@@ -22,8 +23,13 @@ export class UserSeeder {
         role: Role.SUPER_ADMIN,
       }),
       new UserFactory(faker).create({
-        email: 'schheang4@paragoniu.edu.kh',
+        email: 'piustudentpassport@gmail.com',
         role: Role.ADMIN,
+      }),
+      new UserFactory(faker).create({
+        email: 'schheang4@paragoniu.edu.kh',
+        role: Role.STUDENT,
+        student: new Student(),
       }),
     ]);
   }

@@ -26,14 +26,14 @@ export class OfficeService {
     return office;
   }
 
-  findAll(onlyHasUnits: boolean) {
+  findAll(onlyHasUnits: boolean, populate: string) {
     const query = { parent: { $exists: false } };
 
     if (onlyHasUnits) {
       query['hasUnits'] = onlyHasUnits;
     }
 
-    return this.model.find(query);
+    return this.model.find(query).populate(populate);
   }
 
   findAllOfficeHasUnits() {

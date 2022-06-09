@@ -100,7 +100,16 @@ import { TelescopeModule } from './modules/telescope/telescope.module';
   ],
 })
 export class AppModule {
+  constructor(private readonly configService: ConfigService) {}
+
   configure(consumer: MiddlewareConsumer) {
+    if (this.configService.get('APP_DEBUG') !== 'true') {
+      Logger.warn('Run with disabled telescope!');
+      return;
+    }
+
+    Logger.log('Run with enabled telescope!');
+
     consumer
       .apply(HttpLoggerMiddleware)
       .exclude(

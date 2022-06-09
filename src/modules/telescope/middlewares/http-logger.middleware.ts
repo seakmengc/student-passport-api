@@ -22,8 +22,8 @@ export class HttpLoggerMiddleware implements NestMiddleware {
         memory:
           Math.round((process.memoryUsage()['heapTotal'] / 1024 / 1024) * 100) /
           100,
-        headers: req.headers,
-        body: req.body,
+        headers: JSON.stringify(req.headers),
+        body: JSON.stringify(req.body),
         response: resBody,
         time: start,
       });
@@ -49,16 +49,12 @@ export class HttpLoggerMiddleware implements NestMiddleware {
       }
 
       if (
-        res.get('content-type').startsWith('application/json') &&
+        res.get('content-type')?.startsWith('application/json') &&
         chunks.length < 1_000_000 //1MB
       ) {
         const body = Buffer.concat(chunks).toString('utf8');
 
-        try {
-          const parsedBody = JSON.parse(body);
-
-          callback(parsedBody);
-        } catch (err) {}
+        callback(body);
       }
 
       return oldEnd.apply(res, [chunk, ...args]);

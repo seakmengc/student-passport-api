@@ -23,6 +23,10 @@ export class StudentOfficeService {
     private readonly emailService: EmailService,
   ) {}
 
+  findAll(userId: string) {
+    return this.studentOfficeModel.find({ user: userId });
+  }
+
   async firstOrCreate(userId: string, officeId: string) {
     const currStudentOffice = await this.studentOfficeModel.findOne({
       office: officeId,

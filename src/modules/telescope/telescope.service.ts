@@ -20,9 +20,9 @@ export class TelescopeService {
     ip: string;
     cpu: number;
     memory: number;
-    headers?: Record<string, any>;
-    body?: Record<string, any>;
-    response?: Record<string, any>;
+    headers?: string;
+    body?: string;
+    response?: string;
     time: Date;
   }) {
     return this.model.create(data);
@@ -31,8 +31,8 @@ export class TelescopeService {
   findAll(paginationDto: PaginationDto) {
     const queryBuilder = this.model
       .find()
-      .select('method path statusCode duration time')
-      .sort('-id');
+      .select('method path statusCode duration time userId')
+      .sort('-_id');
 
     return new PaginationResponse(queryBuilder, paginationDto).getResponse();
   }

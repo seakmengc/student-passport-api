@@ -4,6 +4,7 @@ import { ApiTags, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import { Controller, Get, Param, Req } from '@nestjs/common';
 import { StudentOfficeService } from './student-office.service';
 import { HasAnyRole } from 'src/decorators/has-any-role.decorator';
+import { AuthId } from 'src/decorators/auth-id.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Student Office')
@@ -16,6 +17,11 @@ export class StudentOfficeController {
   @Get('office/:officeId')
   firstOrCreate(@Param('officeId') officeId: string, @Req() req) {
     return this.studentOfficeService.firstOrCreate(req.payload.sub, officeId);
+  }
+
+  @Get()
+  findAll(@AuthId() userId: string) {
+    return this.studentOfficeService.findAll(userId);
   }
 
   //find offices by student

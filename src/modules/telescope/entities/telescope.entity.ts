@@ -29,14 +29,14 @@ export class Telescope {
   @Prop()
   cpu: number;
 
-  @Prop({ type: mongoose.Schema.Types.Map })
-  headers?: Record<string, any>;
+  @Prop()
+  headers?: string;
 
-  @Prop({ type: mongoose.Schema.Types.Map })
-  response?: Record<string, any>;
+  @Prop()
+  response?: string;
 
-  @Prop({ type: mongoose.Schema.Types.Map })
-  body?: Record<string, any>;
+  @Prop()
+  body?: string;
 
   @Prop()
   time: Date;

@@ -39,8 +39,11 @@ export class OfficeController {
 
   @ApiOkResponse({ type: Office, isArray: true })
   @Get()
-  async findAll(@Query('onlyHasUnits') onlyHasUnits: boolean) {
-    return this.officeService.findAll(onlyHasUnits);
+  async findAll(
+    @Query('onlyHasUnits') onlyHasUnits: boolean,
+    @Query('populate') populate: string,
+  ) {
+    return this.officeService.findAll(onlyHasUnits, populate ?? '');
   }
 
   @ApiOkResponse({ type: Office, isArray: true })

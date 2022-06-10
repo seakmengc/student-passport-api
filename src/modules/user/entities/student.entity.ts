@@ -10,10 +10,6 @@ export class Student {
   studentId?: string;
 
   @ApiProperty()
-  @Prop({ default: true })
-  isActive: boolean;
-
-  @ApiProperty()
   @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: () => Office })
   officesCompleted: Office[];
 }

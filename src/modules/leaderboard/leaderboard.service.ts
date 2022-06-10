@@ -1,5 +1,5 @@
 import { AuthenticationService } from 'src/modules/auth/services/authentication.service';
-import { User } from 'src/modules/user/entities/user.entity';
+import { Role, User } from 'src/modules/user/entities/user.entity';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -23,9 +23,11 @@ export class LeaderboardService {
     const start = (parseInt(paginationDto?.page ?? '1') - 1) * size;
     const stop = start + size - 1; //inclusive
 
-    const usersScoresRedis = await this.redisService
-      .getClient()
-      .zrevrange(this.redisKey, start, stop, 'WITHSCORES');
+    const usersScoresRedis =
+      (await this.rebuildSortedSet()) ??
+      (await this.redisService
+        .getClient()
+        .zrevrange(this.redisKey, start, stop, 'WITHSCORES'));
 
     const usersScores = {};
     for (let index = 0; index < usersScoresRedis.length; index += 2) {
@@ -37,7 +39,6 @@ export class LeaderboardService {
     const users = await this.userModel
       .find(
         { _id: { $in: Object.keys(usersScores) } },
-        // {},
         { profile: 1, firstName: 1, lastName: 1, student: 1 },
       )
       .lean()
@@ -62,17 +63,29 @@ export class LeaderboardService {
     return { rank, score };
   }
 
-  // async rebuildSortedSet() {
-  //   const users = await this.userModel.find(
-  //     {
-  //       role: Role.STUDENT,
-  //       student: {
-  //         officesCompleted: { $exists: true },
-  //       },
-  //     },
-  //     { 'student.officesCompleted': 1 },
-  //   );
-  // }
+  async rebuildSortedSet() {
+    if (await this.redisService.getClient().exists(this.redisKey)) {
+      return null;
+    }
+
+    const users = await this.userModel.find(
+      {
+        role: Role.STUDENT,
+        'student.officesCompleted.1': { $exists: true },
+      },
+      { 'student.officesCompleted': 1 },
+    );
+    console.log(users);
+
+    const usersScores = users.flatMap((user) => [
+      user.student.officesCompleted.length,
+      user.id,
+    ]);
+
+    await this.redisService.getClient().zadd(this.redisKey, ...usersScores);
+
+    return usersScores;
+  }
 
   increment(userId: string, by = 1) {
     return this.redisService.getClient().zincrby(this.redisKey, by, userId);

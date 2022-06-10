@@ -18,7 +18,6 @@ export class TelescopeService {
     statusCode: number;
     duration: number;
     ip: string;
-    cpu: number;
     memory: number;
     headers?: string;
     body?: string;

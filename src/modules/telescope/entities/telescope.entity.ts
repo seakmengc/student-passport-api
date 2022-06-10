@@ -27,9 +27,6 @@ export class Telescope {
   memory: number;
 
   @Prop()
-  cpu: number;
-
-  @Prop()
   headers?: string;
 
   @Prop()

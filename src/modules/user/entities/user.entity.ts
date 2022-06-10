@@ -4,9 +4,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Upload } from 'src/modules/upload/entities/upload.entity';
 import { Student } from './student.entity';
-import { ConfigService } from '@nestjs/config';
-import { AuthenticationService } from 'src/modules/auth/services/authentication.service';
-import { Inject } from '@nestjs/common';
 
 export enum Role {
   SUPER_ADMIN = 'Super Admin',
@@ -14,9 +11,6 @@ export enum Role {
   STUDENT = 'Student',
 }
 
-export interface IUser {
-  setProfileUrl(authenticationService: AuthenticationService): Promise<void>;
-}
 @Schema({ timestamps: true })
 export class User {
   _id: string;
@@ -58,27 +52,11 @@ export class User {
   student?: Student;
 }
 
-export type UserDocument = User & mongoose.Document & IUser;
+export type UserDocument = User & mongoose.Document;
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.index({ role: 1, 'student.officesCompleted': -1 });
-
-UserSchema.methods.setProfileUrl = async function (
-  authenticationService: AuthenticationService,
-): Promise<void> {
-  if (!this.profile) {
-    this.profileUrl = `https://avatars.dicebear.com/api/avataaars/${this._id}.svg`;
-    return;
-  }
-
-  const signature = await authenticationService.generateSignatureForUpload(
-    this.profile?._id,
-  );
-
-  this.profileUrl =
-    process.env.APP_URL + `/upload/${this.profile}/file?sig=${signature}`;
-};
 
 UserSchema.methods.toJSON = function () {
   return {
@@ -96,6 +74,10 @@ UserSchema.pre('save', async function (next) {
 
   if (user.isModified('password')) {
     user.password = await hash(user.password, 10);
+  }
+
+  if (user.isModified('email') && user.email) {
+    user.email = user.email.toLowerCase();
   }
 
   try {

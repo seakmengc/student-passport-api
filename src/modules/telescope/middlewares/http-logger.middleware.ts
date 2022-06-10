@@ -18,7 +18,6 @@ export class HttpLoggerMiddleware implements NestMiddleware {
         statusCode: res.statusCode,
         duration: Date.now() - start.getTime(),
         ip: req.ip,
-        cpu: process.cpuUsage(startCpu)['user'] / 1000,
         memory:
           Math.round((process.memoryUsage()['heapTotal'] / 1024 / 1024) * 100) /
           100,

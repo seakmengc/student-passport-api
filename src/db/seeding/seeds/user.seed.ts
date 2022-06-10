@@ -11,7 +11,7 @@ export class UserSeeder {
 
     await this.seedSuperAdminUsers();
 
-    await new UserFactory(faker).createMany(10);
+    await new UserFactory(faker).createMany(30);
 
     Logger.log('Finished seeding!', 'User Seeder');
   }

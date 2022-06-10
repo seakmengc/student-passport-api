@@ -4,7 +4,7 @@ import { PaginationDto } from './../../common/dto/pagination.dto';
 import { Controller, Get } from '@nestjs/common';
 import { AllowUnauth } from 'src/decorators/allow-unauth.decorator';
 
-@Controller('leaderbaord')
+@Controller('leaderboard')
 export class LeaderboardController {
   constructor(private readonly leaderboardService: LeaderboardService) {}
 

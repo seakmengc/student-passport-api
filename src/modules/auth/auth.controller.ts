@@ -84,8 +84,6 @@ export class AuthController {
   async me(@AuthId() userId: string) {
     const auth = await this.userService.findOne(userId);
 
-    await auth.setProfileUrl(this.authService.authenticationService);
-
     return auth;
   }
 

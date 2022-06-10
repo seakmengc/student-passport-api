@@ -91,8 +91,6 @@ export class UserController {
       throw new NotFoundException();
     }
 
-    await user.setProfileUrl(this.authenticationService);
-
     return user;
   }
 
@@ -111,7 +109,6 @@ export class UserController {
   @ApiOkResponse({ type: User })
   async updateMe(@AuthId() id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.service.update(id, updateUserDto);
-    await user.setProfileUrl(this.authenticationService);
 
     return user;
   }
@@ -120,7 +117,6 @@ export class UserController {
   @ApiOkResponse({ type: User })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.service.update(id, updateUserDto);
-    await user.setProfileUrl(this.authenticationService);
 
     return user;
   }

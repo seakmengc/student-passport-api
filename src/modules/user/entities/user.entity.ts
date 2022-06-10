@@ -85,6 +85,9 @@ UserSchema.methods.toJSON = function () {
     ...this.toObject(),
     password: undefined,
     isAdmin: this.role?.endsWith('Admin'),
+    profileUrl: this.profile
+      ? process.env.APP_URL + `/upload/${this.profile}/file`
+      : `https://avatars.dicebear.com/api/avataaars/${this._id}.svg`,
   };
 };
 

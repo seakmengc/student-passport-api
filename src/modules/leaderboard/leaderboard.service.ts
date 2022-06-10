@@ -20,35 +20,31 @@ export class LeaderboardService {
 
   async findAll(paginationDto: PaginationDto) {
     const size = 15;
-    const start = (parseInt(paginationDto.page) - 1) * size;
+    const start = (parseInt(paginationDto?.page ?? '1') - 1) * size;
     const stop = start + size - 1; //inclusive
 
-    const userIds = await this.redisService
+    const usersScoresRedis = await this.redisService
       .getClient()
       .zrevrange(this.redisKey, start, stop, 'WITHSCORES');
 
+    const usersScores = {};
+    for (let index = 0; index < usersScoresRedis.length; index += 2) {
+      usersScores[usersScoresRedis[index]] = parseInt(
+        usersScoresRedis[index + 1],
+      );
+    }
+
     const users = await this.userModel
       .find(
-        { _id: { $in: userIds } },
+        { _id: { $in: Object.keys(usersScores) } },
+        // {},
         { profile: 1, firstName: 1, lastName: 1, student: 1 },
       )
       .lean()
       .exec();
 
-    const profileIds = users
-      .filter((user) => user.profile)
-      .map((user) => user.profile.id);
-    const signature =
-      await this.authenticationService.generateSignatureForUploads(profileIds);
-    const baseUrl = this.configService.get('APP_URL');
-
-    users.forEach((user) => {
-      if (user.profile) {
-        user.profileUrl = `https://avatars.dicebear.com/api/avataaars/${user.firstName}.svg`;
-        return;
-      }
-
-      user.profileUrl = `${baseUrl}/upload/${user.profile}/file?sig=${signature}`;
+    users.forEach((user: any) => {
+      user.score = usersScores[user._id] ?? 0;
     });
 
     return users;

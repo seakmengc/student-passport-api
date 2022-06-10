@@ -34,11 +34,12 @@ async function bootstrap() {
 
   mongoose.set('debug', (process.env.NODE_ENV ?? 'local') === 'local');
 
+  // app.getHttpAdapter().getInstance().disable('x-powered-by');
   app.enableCors({
     maxAge: 86400,
   });
   app.use(mongoSanitize());
-  // app.use(helmet());
+  app.use(helmet());
   // app.use(cookieParser());
 
   app.useGlobalPipes(new TransformFilterQueryStringPipe());

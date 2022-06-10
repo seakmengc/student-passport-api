@@ -11,7 +11,9 @@ export class UserSeeder {
 
     await this.seedSuperAdminUsers();
 
-    await new UserFactory(faker).createMany(30);
+    await new UserFactory(faker).createMany(
+      (process.env.NODE_ENV ?? 'local') !== 'local' ? 100 : 30,
+    );
 
     Logger.log('Finished seeding!', 'User Seeder');
   }

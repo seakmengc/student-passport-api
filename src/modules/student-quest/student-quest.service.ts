@@ -38,6 +38,7 @@ export class StudentQuestService {
       userId,
       officeId,
     );
+    console.log({ studentOffice });
 
     let lastId: string;
     if (studentOffice.lastCompleted) {
@@ -58,6 +59,7 @@ export class StudentQuestService {
       })
       .populate('upload quest');
 
+    //default
     if (!studentQuest) {
       studentQuest = new StudentQuest();
 

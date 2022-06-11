@@ -134,7 +134,7 @@ export class UserService {
 
   async toggleBlock(id: string, action: string) {
     const user = await this.userModel.findByIdAndUpdate(id, {
-      isActive: action === 'block',
+      isActive: action !== 'block',
     });
 
     await this.refreshTokenModel.updateMany(

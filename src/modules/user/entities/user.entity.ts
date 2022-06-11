@@ -62,6 +62,7 @@ UserSchema.methods.toJSON = function () {
   return {
     ...this.toObject(),
     password: undefined,
+    name: this.firstName + ' ' + this.lastName,
     isAdmin: this.role?.endsWith('Admin'),
     profileUrl: this.profile
       ? process.env.APP_URL + `/upload/${this.profile}/file`

@@ -21,7 +21,10 @@ export class HttpLoggerMiddleware implements NestMiddleware {
         memory:
           Math.round((process.memoryUsage()['heapTotal'] / 1024 / 1024) * 100) /
           100,
-        headers: JSON.stringify(req.headers),
+        headers: JSON.stringify({
+          ...req.headers,
+          authorization: req.headers.authorization ? 'Bearer ***' : undefined,
+        }),
         body: JSON.stringify(req.body),
         response: resBody,
         time: start,

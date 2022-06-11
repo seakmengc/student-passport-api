@@ -38,18 +38,18 @@ export class StudentQuestService {
       userId,
       officeId,
     );
-    console.log({ studentOffice });
 
-    let lastId: string;
+    let lastId: any = null;
     if (studentOffice.lastCompleted) {
       const currId = studentOffice.lastCompleted.id;
+
       const ind = studentOffice.quests.findIndex((q: Quest) => q.id === currId);
 
       lastId = studentOffice.quests[ind + 1]
-        ? studentOffice.quests[ind + 1].id
+        ? studentOffice.quests[ind + 1]
         : null;
     } else {
-      lastId = studentOffice.quests[0]?.id ?? null;
+      lastId = studentOffice.quests[0] ?? null;
     }
 
     let studentQuest: any = await this.studentQuestModel

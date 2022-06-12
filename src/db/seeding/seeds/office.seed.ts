@@ -81,7 +81,7 @@ export class OfficeSeeder {
     await this.OfficeModel.create(
       this.units.map((unit) => ({
         ...unit,
-        parent: parent._id,
+        parent: parent.id,
         stamp: stamp.id,
       })),
     );

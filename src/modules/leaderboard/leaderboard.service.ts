@@ -19,15 +19,15 @@ export class LeaderboardService {
   ) {}
 
   async findAll(paginationDto: PaginationDto) {
-    const size = 15;
-    const start = (parseInt(paginationDto?.page ?? '1') - 1) * size;
-    const stop = start + size - 1; //inclusive
+    // const size = 15;
+    // const start = (parseInt(paginationDto?.page ?? '1') - 1) * size;
+    // const stop = start + size - 1; //inclusive
 
     const usersScoresRedis =
       (await this.rebuildSortedSet()) ??
       (await this.redisService
         .getClient()
-        .zrevrange(this.redisKey, start, stop, 'WITHSCORES'));
+        .zrevrange(this.redisKey, 0, -1, 'WITHSCORES'));
 
     const usersScores = {};
     for (let index = 0; index < usersScoresRedis.length; index += 2) {
@@ -45,7 +45,7 @@ export class LeaderboardService {
       .exec();
 
     users.forEach((user: any) => {
-      user.score = usersScores[user._id] ?? 0;
+      user.score = usersScores[user.id] ?? 0;
     });
 
     return users;

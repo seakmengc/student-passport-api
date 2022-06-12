@@ -29,6 +29,35 @@ export class StudentQuestService {
     private emailService: EmailService,
   ) {}
 
+  async getStudentQuests(userId: string, officeId: string) {
+    let studentOffice: any = await this.studentOfficeService.firstOrCreate(
+      userId,
+      officeId,
+    );
+
+    const studentQuests = await this.studentQuestModel.find({
+      user: userId,
+      office: officeId,
+      quest: { $in: studentOffice.quests },
+    });
+
+    await studentOffice.populate('quests office');
+    studentOffice = studentOffice.toObject();
+    for (const key in studentOffice.quests) {
+      studentOffice.quests[key]['submission'] = studentQuests.find(
+        (each) =>
+          (each.quest as unknown).toString() ===
+          studentOffice.quests[key]._id.toString(),
+      );
+
+      studentOffice.quests[key]['canSubmit'] =
+        !studentOffice.quests[key]['submission'] ||
+        studentOffice.quests[key]['submission'].status === 'rejected';
+    }
+
+    return studentOffice;
+  }
+
   async getLatestQuest(userId: string, officeId: string) {
     if (await this.officeModel.exists({ parent: officeId })) {
       throw new BadRequestException("Can't get quest for office with units.");
@@ -71,6 +100,24 @@ export class StudentQuestService {
   }
 
   async create(userId: string, createStudentQuestDto: CreateStudentQuestDto) {
+    const quest = await this.questModel
+      .findById(createStudentQuestDto.quest)
+      .orFail();
+
+    if (quest.questType === QuestType.MCQ && !createStudentQuestDto.answer) {
+      throw new BadRequestException('Answer is required.');
+    } else if (
+      quest.questType === QuestType.INPUT &&
+      !createStudentQuestDto.input
+    ) {
+      throw new BadRequestException('Input is required.');
+    } else if (
+      quest.questType === QuestType.MEDIA &&
+      !createStudentQuestDto.upload
+    ) {
+      throw new BadRequestException('Media is required.');
+    }
+
     let curr = await this.studentQuestModel.findOne({
       user: userId,
       quest: createStudentQuestDto.quest,
@@ -90,19 +137,19 @@ export class StudentQuestService {
         user: userId,
         office,
       });
-
-      await this.determineAutoGrading(curr);
     } else {
       if (curr.status !== StudentQuestStatus.REJECTED) {
         throw new BadRequestException('Quest already submitted/approved.');
       }
 
       curr = await this.studentQuestModel.findByIdAndUpdate(
-        curr._id,
+        curr.id,
         { ...createStudentQuestDto, status: StudentQuestStatus.PENDING },
         { new: true },
       );
     }
+
+    await this.determineAutoGrading(curr);
 
     return curr;
   }
@@ -178,12 +225,12 @@ export class StudentQuestService {
 
     if (approveStudentQuestDto.isApproved) {
       await this.studentOfficeService.updateLastCompleted(
-        userId,
-        studentQuest.quest.office.id,
+        studentQuest.user.toString(),
+        studentQuest.office.toString(),
         studentQuest.quest.id,
       );
     } else {
-      const user = await this.userModel.findById(userId, {
+      const user = await this.userModel.findById(studentQuest.user.toString(), {
         email: 1,
         firstName: 1,
       });
@@ -211,8 +258,6 @@ export class StudentQuestService {
       await studentQuest.populate('quest');
     }
 
-    console.log(studentQuest.quest);
-
     if (!studentQuest.quest.autoGrading) {
       return;
     }
@@ -229,10 +274,10 @@ export class StudentQuestService {
         if (!correct) {
           break;
         }
-        console.log(studentQuest.answer, correct);
 
-        if (studentQuest.answer.toString() === correct._id.toString()) {
+        if (studentQuest.answer.toString() === correct.id) {
           studentQuest.status = StudentQuestStatus.APPROVED;
+          studentQuest.reason = undefined;
         } else {
           studentQuest.status = StudentQuestStatus.REJECTED;
           studentQuest.reason = 'Wrong answer.';
@@ -247,8 +292,8 @@ export class StudentQuestService {
 
     if (studentQuest.status === StudentQuestStatus.APPROVED) {
       await this.studentOfficeService.updateLastCompleted(
-        studentQuest.user._id,
-        studentQuest.quest.office.id,
+        studentQuest.user.toString(),
+        studentQuest.office.toString(),
         studentQuest.quest.id,
       );
     }

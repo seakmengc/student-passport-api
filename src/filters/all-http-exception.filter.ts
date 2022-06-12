@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import mongoose from 'mongoose';
 
 @Catch()
@@ -11,6 +11,8 @@ export class AllHttpExceptionFilter implements ExceptionFilter {
   }
 
   catch(exception: Error, host: ArgumentsHost) {
+    Logger.error(exception);
+
     const res = host.switchToHttp().getResponse() as Response;
     if (exception['response']) {
       return res.status(exception['status']).send(exception['response']);

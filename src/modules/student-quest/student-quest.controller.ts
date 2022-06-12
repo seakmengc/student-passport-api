@@ -41,6 +41,13 @@ export class StudentQuestController {
     return this.studentQuestService.getLatestQuest(req.payload.sub, officeId);
   }
 
+  @HasAnyRole(Role.STUDENT)
+  @ApiOkResponse({ type: StudentQuest })
+  @Get('office/:officeId')
+  getStudentQuests(@Param('officeId') officeId: string, @Req() req) {
+    return this.studentQuestService.getStudentQuests(req.payload.sub, officeId);
+  }
+
   //submit by quest
   @HasAnyRole(Role.STUDENT)
   @ApiCreatedResponse({ type: StudentQuest })

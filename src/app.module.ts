@@ -43,7 +43,7 @@ import { TelescopeModule } from './modules/telescope/telescope.module';
         return {
           uri: configService.get('DB_URI'),
           useNewUrlParser: true,
-          autoIndex: true,
+          autoIndex: false,
           connectionFactory: (connection) => {
             connection.plugin(paginator);
 

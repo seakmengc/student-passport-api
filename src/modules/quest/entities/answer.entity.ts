@@ -27,3 +27,10 @@ export class Answer {
 export type AnswerDocument = Answer & mongoose.Document;
 
 export const AnswerSchema = SchemaFactory.createForClass(Answer);
+
+AnswerSchema.methods.toJSON = function () {
+  return {
+    ...this.toObject(),
+    correct: undefined,
+  };
+};

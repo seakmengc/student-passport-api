@@ -42,7 +42,7 @@ export class AuthenticationService {
 
   async generateTokens(user: User): Promise<LoggedInResponse> {
     const payload: TokenPayload = {
-      sub: user._id,
+      sub: user.id,
       role: user.role,
     };
 

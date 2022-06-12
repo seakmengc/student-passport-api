@@ -59,6 +59,8 @@ export class HttpLoggerMiddleware implements NestMiddleware {
         callback(body);
       }
 
+      res.setHeader('X-Powered-By', process.env.APP_NAME);
+
       return oldEnd.apply(res, [chunk, ...args]);
     };
   }

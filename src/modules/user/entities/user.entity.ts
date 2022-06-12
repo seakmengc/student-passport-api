@@ -13,7 +13,7 @@ export enum Role {
 
 @Schema({ timestamps: true })
 export class User {
-  _id: string;
+  id: string;
 
   @ApiProperty()
   @Prop()
@@ -66,7 +66,7 @@ UserSchema.methods.toJSON = function () {
     isAdmin: this.role?.endsWith('Admin'),
     profileUrl: this.profile
       ? process.env.APP_URL + `/upload/${this.profile}/file`
-      : `https://avatars.dicebear.com/api/avataaars/${this._id}.svg`,
+      : `https://avatars.dicebear.com/api/avataaars/${this.id}.svg`,
   };
 };
 

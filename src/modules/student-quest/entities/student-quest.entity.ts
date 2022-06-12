@@ -67,3 +67,10 @@ export type StudentQuestDocument = StudentQuest & mongoose.Document;
 export const StudentQuestSchema = SchemaFactory.createForClass(StudentQuest);
 
 StudentQuestSchema.index({ user: 1, quest: 1 }, { unique: true });
+
+StudentQuestSchema.methods.toJSON = function () {
+  return {
+    ...this.toObject(),
+    canSubmit: this.status === 'rejected',
+  };
+};

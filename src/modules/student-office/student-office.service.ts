@@ -70,7 +70,6 @@ export class StudentOfficeService {
       { new: true },
     );
 
-    Logger.log(studentOffice);
     //all completed
     if (studentOffice.numOfQuestsCompleted === studentOffice.quests.length) {
       studentOffice.completed = true;
@@ -78,9 +77,10 @@ export class StudentOfficeService {
       await Promise.all([
         studentOffice.save(),
         studentOffice.populate('office office.parent'),
-        //reward stamp
-        this.rewardStamp(userId, studentOffice),
       ]);
+
+      //reward stamp
+      await this.rewardStamp(userId, studentOffice.office);
 
       //sub-office
       if (studentOffice.office.parent) {

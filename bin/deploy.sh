@@ -46,11 +46,11 @@ determine_deployment_strategy() {
 
   else
     echo "One server is up... use update strategy!"
+    update_server
+
     commands=("yarn seed:run:prod")
 
     run_commands "${commands[@]}"
-
-    update_server
   fi
 
   echo "DONE !"
@@ -61,7 +61,7 @@ run_commands() {
 
   # docker exec $api_container_id yarn seed:run
   for command in "${command_to_run[@]}"; do
-    local container_id=$(docker run -d --network=$container_network $container_image $command)
+    local container_id=$(docker run -d --network=$container_network -v /docker/storage:/app/storage $container_image $command)
 
     local container_rc=$(docker wait $container_id) # produces its exit status
     docker rm "$container_id"

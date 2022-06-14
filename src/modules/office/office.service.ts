@@ -36,6 +36,15 @@ export class OfficeService {
     return this.model.find(query).populate(populate);
   }
 
+  async findByIdsWithStamps(ids: string[]) {
+    const offices = await this.model.find(
+      { _id: { $in: ids } },
+      { stamp: 1, name: 1 },
+    );
+
+    return offices;
+  }
+
   findAllOfficeHasUnits() {
     return this.model.find({ hasUnits: true });
   }

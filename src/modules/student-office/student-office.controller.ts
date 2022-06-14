@@ -1,7 +1,7 @@
 import { Role } from 'src/modules/user/entities/user.entity';
 import { StudentOffice } from 'src/modules/student-office/entities/student-office.entity';
 import { ApiTags, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
-import { Controller, Get, Param, Req } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req } from '@nestjs/common';
 import { StudentOfficeService } from './student-office.service';
 import { HasAnyRole } from 'src/decorators/has-any-role.decorator';
 import { AuthId } from 'src/decorators/auth-id.decorator';
@@ -20,8 +20,10 @@ export class StudentOfficeController {
   }
 
   @Get()
-  findAll(@AuthId() userId: string) {
-    return this.studentOfficeService.findAll(userId);
+  findAll(@AuthId() userId: string, @Query('officeIds') officeId: string) {
+    const officeIds = officeId?.split(',');
+
+    return this.studentOfficeService.findAll(userId, officeIds);
   }
 
   //find offices by student

@@ -47,6 +47,14 @@ export class OfficeController {
   }
 
   @ApiOkResponse({ type: Office, isArray: true })
+  @Get('/ids')
+  async findOfficesByIdsWithStamps(@Query('ids') id: string) {
+    const ids = id.split(',');
+
+    return this.officeService.findByIdsWithStamps(ids);
+  }
+
+  @ApiOkResponse({ type: Office, isArray: true })
   @Get('/unit')
   async findAllUnits() {
     return this.officeService.findAllUnits();

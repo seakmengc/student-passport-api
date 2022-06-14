@@ -23,8 +23,16 @@ export class StudentOfficeService {
     private readonly emailService: EmailService,
   ) {}
 
-  findAll(userId: string) {
-    return this.studentOfficeModel.find({ user: userId });
+  findAll(userId: string, officeIds: string[]) {
+    const query = {
+      user: userId,
+    };
+
+    if (officeIds) {
+      query['office'] = { $in: officeIds };
+    }
+
+    return this.studentOfficeModel.find(query);
   }
 
   async firstOrCreate(userId: string, officeId: string) {
@@ -33,7 +41,7 @@ export class StudentOfficeService {
       user: userId,
     });
 
-    if (currStudentOffice) {
+    if (currStudentOffice && currStudentOffice.quests.length > 0) {
       return currStudentOffice;
     }
 
@@ -42,6 +50,13 @@ export class StudentOfficeService {
       { _id: true },
       { sort: { order: 'asc' } },
     );
+
+    if (currStudentOffice.quests.length === 0) {
+      currStudentOffice.quests = quests;
+      await currStudentOffice.save();
+
+      return currStudentOffice;
+    }
 
     return this.studentOfficeModel.create({
       office: officeId,

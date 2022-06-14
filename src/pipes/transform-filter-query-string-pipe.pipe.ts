@@ -16,7 +16,7 @@ export class TransformFilterQueryStringPipe implements PipeTransform {
       return value;
     }
 
-    console.log({ value });
+    // console.log({ value });
 
     const tmp = {};
     for (const each of value['filter'].split('&')) {
@@ -29,7 +29,7 @@ export class TransformFilterQueryStringPipe implements PipeTransform {
 
     value['filter'] = tmp;
 
-    console.log({ value });
+    // console.log({ value });
 
     return value;
   }

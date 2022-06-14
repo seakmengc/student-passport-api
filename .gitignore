@@ -35,4 +35,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 storage/*
-!storage/public
+!storage/assets

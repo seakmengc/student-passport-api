@@ -40,7 +40,7 @@ export class EmailService {
       .toString()
       .replace(
         this.createRegex(['logo_url']),
-        configService.get('APP_URL') + '/img/logo.png',
+        configService.get('FRONTEND_URL') + '/images/logo.png',
       )
       .replace(
         this.createRegex(['frontend_url']),

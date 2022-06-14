@@ -13,6 +13,8 @@ import {
   UploadSchema,
 } from 'src/modules/upload/entities/upload.entity';
 import { readFile, writeFile } from 'fs/promises';
+import { resolve } from 'path';
+import { Helper } from 'src/common/helper';
 
 export class UploadSeeder {
   private UploadModel: mongoose.Model<mongoose.Document<Upload>>;
@@ -33,8 +35,8 @@ export class UploadSeeder {
   public async run(): Promise<void> {
     await this.UploadModel.deleteMany({});
     await writeFile(
-      'storage/upload/Ov91EtbqOT3yGCFkCdkd4',
-      await readFile('storage/public/img/stamp.png'),
+      Helper.getFullPath('storage/upload/Ov91EtbqOT3yGCFkCdkd4'),
+      await readFile(Helper.getFullPath('storage/assets/stamp.png')),
     );
 
     await this.UploadModel.create(this.data);

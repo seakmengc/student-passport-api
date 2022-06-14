@@ -16,7 +16,7 @@ export class TransformInputPipe implements PipeTransform {
 
     this.processTransform(value);
 
-    console.log(value);
+    // console.log(value);
 
     return value;
   }

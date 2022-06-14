@@ -43,7 +43,7 @@ import { TelescopeModule } from './modules/telescope/telescope.module';
         return {
           uri: configService.get('DB_URI'),
           useNewUrlParser: true,
-          autoIndex: false,
+          autoIndex: (process.env.NODE_ENV ?? 'local') !== 'local',
           connectionFactory: (connection) => {
             connection.plugin(paginator);
 
@@ -75,9 +75,9 @@ import { TelescopeModule } from './modules/telescope/telescope.module';
     MulterModule.register({
       dest: './storage/tmp',
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(resolve('./'), 'storage/public'),
-    }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: join(resolve('./'), 'storage/public'),
+    // }),
     AuthModule,
     ResetPasswordModule,
     UserModule,

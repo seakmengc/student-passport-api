@@ -8,6 +8,8 @@ import { Logger } from '@nestjs/common';
 import mongoose from 'mongoose';
 import { resolve } from 'path';
 import { EmailSeeder } from './email.seed';
+import { Helper } from 'src/common/helper';
+import { mkdir } from 'fs/promises';
 
 async function run(): Promise<void> {
   const STORES = {

@@ -26,11 +26,11 @@ export class UploadSeeder {
   public async run(): Promise<void> {
     await this.UploadModel.deleteMany({});
 
-    await mkdir(Helper.getFullPath('storage/upload'));
+    await mkdir(Helper.getFullPath('storage/upload'), { recursive: true });
 
     await writeFile(
       Helper.getFullPath('storage/upload/Ov91EtbqOT3yGCFkCdkd4'),
-      await readFile(Helper.getFullPath('storage/assets/stamp.png')),
+      await readFile(Helper.getFullPath('assets/stamp.png')),
     );
 
     await this.UploadModel.create(this.data);

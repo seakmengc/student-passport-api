@@ -129,7 +129,7 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    return this.userModel.findByIdAndUpdate(id, updateUserDto);
+    return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
   }
 
   async toggleBlock(id: string, action: string) {

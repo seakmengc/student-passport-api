@@ -51,7 +51,7 @@ export class StudentOfficeService {
       { sort: { order: 'asc' } },
     );
 
-    if (currStudentOffice.quests.length === 0) {
+    if (currStudentOffice && currStudentOffice.quests?.length === 0) {
       currStudentOffice.quests = quests;
       await currStudentOffice.save();
 

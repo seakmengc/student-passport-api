@@ -40,7 +40,7 @@ export class ResetPasswordService {
     await this.resetPasswordModel.deleteOne({ userId: user.id });
 
     //send email with token
-    await this.emailService.sendMail({
+    this.emailService.sendMail({
       name: 'password.forgot',
       to: user.email,
       replacements: {

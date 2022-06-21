@@ -37,10 +37,9 @@ export class OfficeService {
   }
 
   async findByIdsWithStamps(ids: string[]) {
-    const offices = await this.model.find(
-      { _id: { $in: ids } },
-      { stamp: 1, name: 1 },
-    );
+    const offices = await this.model
+      .find(ids.length > 0 ? { _id: { $in: ids } } : {}, { stamp: 1, name: 1 })
+      .populate('parent', 'name');
 
     return offices;
   }

@@ -64,6 +64,7 @@ export class LeaderboardService {
   }
 
   async rebuildSortedSet() {
+    await this.redisService.getClient().del(this.redisKey);
     if (await this.redisService.getClient().exists(this.redisKey)) {
       return null;
     }
@@ -75,7 +76,6 @@ export class LeaderboardService {
       },
       { 'student.officesCompleted': 1 },
     );
-    console.log(users);
 
     const usersScores = users.flatMap((user) => [
       user.student.officesCompleted.length,
@@ -84,7 +84,10 @@ export class LeaderboardService {
 
     await this.redisService.getClient().zadd(this.redisKey, ...usersScores);
 
-    return usersScores;
+    return users.flatMap((user) => [
+      user.id,
+      user.student.officesCompleted.length,
+    ]);
   }
 
   increment(userId: string, by = 1) {

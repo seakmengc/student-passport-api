@@ -14,6 +14,15 @@ export class EmailSeeder {
 
   protected data = [
     {
+      name: 'welcome',
+      subject: 'Welcome to Student Passport!',
+      header: 'Hi "{{name}}"',
+      subheader: 'Welcome to Student Passport!',
+      body: 'We are pleased to have you here and can not wait to explore the offices with you!',
+      footer: 'Go to your profile now and check it out!',
+      img: 'http://weekly.grapestheme.com/notify/img/hero-img/blue/heroFill/notification-bookmark.png',
+    },
+    {
       name: 'password.forgot',
       subject: 'Reset Password',
       header: 'Reset Password',

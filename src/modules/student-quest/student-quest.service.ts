@@ -16,6 +16,7 @@ import { PaginationResponse } from 'src/common/res/pagination.res';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { ApproveStudentQuestDto } from './dto/approve-student-quest.dto';
 import { EmailService } from '../email/email.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StudentQuestService {
@@ -27,6 +28,7 @@ export class StudentQuestService {
     @InjectModel(User.name) private userModel: mongoose.Model<User>,
     private studentOfficeService: StudentOfficeService,
     private emailService: EmailService,
+    private configService: ConfigService,
   ) {}
 
   async getStudentQuests(userId: string, officeId: string) {
@@ -221,12 +223,12 @@ export class StudentQuestService {
         },
         { new: true },
       )
-      .populate('quest');
+      .populate('quest office');
 
     if (approveStudentQuestDto.isApproved) {
       await this.studentOfficeService.updateLastCompleted(
         studentQuest.user.toString(),
-        studentQuest.office.toString(),
+        studentQuest.office.id,
         studentQuest.quest.id,
       );
     } else {
@@ -242,10 +244,11 @@ export class StudentQuestService {
           name: user.firstName,
           reason: approveStudentQuestDto.reason ?? 'N/A',
         },
-        //TODO link
         button: {
           name: 'Resubmit!',
-          link: '#',
+          link: `${this.configService.get('FRONTEND_URL')}/${
+            studentQuest.office.parent ? 'units' : 'offices'
+          }/${studentQuest.office.id}/quests`,
         },
       });
     }

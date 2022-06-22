@@ -13,6 +13,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { Upload, UploadSchema } from '../upload/entities/upload.entity';
 import { Office, OfficeSchema } from '../office/entities/office.entity';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { Office, OfficeSchema } from '../office/entities/office.entity';
       { name: Office.name, schema: OfficeSchema },
       { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
+    EmailModule,
   ],
   controllers: [AuthController],
   providers: [

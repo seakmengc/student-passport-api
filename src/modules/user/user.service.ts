@@ -20,6 +20,7 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginationResponse } from 'src/common/res/pagination.res';
 import { AuthenticationService } from '../auth/services/authentication.service';
 import { Office, OfficeDocument } from '../office/entities/office.entity';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UserService {
@@ -30,6 +31,7 @@ export class UserService {
     @InjectModel(RefreshToken.name)
     private refreshTokenModel: Model<RefreshTokenDocument>,
     private configService: ConfigService,
+    private emailService: EmailService,
     private readonly authenticationService: AuthenticationService,
   ) {}
 
@@ -57,6 +59,18 @@ export class UserService {
       ...registerDto,
       role: Role.STUDENT,
       student: new Student(),
+    });
+
+    this.emailService.sendMail({
+      name: 'welcome',
+      to: user.email,
+      replacements: {
+        name: user.firstName,
+      },
+      button: {
+        name: 'Explore now!',
+        link: this.configService.get('FRONTEND_URL'),
+      },
     });
 
     return user;

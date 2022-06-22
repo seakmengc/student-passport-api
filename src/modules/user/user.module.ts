@@ -13,6 +13,7 @@ import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthenticationService } from '../auth/services/authentication.service';
 import { AuthModule } from '../auth/auth.module';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: RefreshToken.name, schema: RefreshTokenSchema },
     ]),
     AuthModule,
+    EmailModule,
   ],
   controllers: [UserController],
   providers: [UserService, AuthenticationService],

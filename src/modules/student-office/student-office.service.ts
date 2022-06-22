@@ -10,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { StudentOffice } from './entities/student-office.entity';
 import { EmailService } from '../email/email.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StudentOfficeService {
@@ -21,6 +22,7 @@ export class StudentOfficeService {
     @InjectModel(User.name) private userModel: mongoose.Model<User>,
     private readonly leaderboardService: LeaderboardService,
     private readonly emailService: EmailService,
+    private readonly configService: ConfigService,
   ) {}
 
   async findAll(userId: string, officeIds: string[]) {
@@ -149,10 +151,9 @@ export class StudentOfficeService {
         name: user.firstName,
         officeName: office.name,
       },
-      //TODO button link
       button: {
         name: 'Check it out!',
-        link: '#',
+        link: this.configService.get('FRONTEND_URL') + '/profile/my',
       },
     });
   }

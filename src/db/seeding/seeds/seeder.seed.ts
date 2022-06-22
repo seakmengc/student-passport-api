@@ -25,7 +25,7 @@ async function run(): Promise<void> {
   });
 
   await mongoose.connect(process.env.DB_URI);
-  await mongoose.connection.db.dropDatabase();
+  // await mongoose.connection.db.dropDatabase();
 
   const session = await mongoose.startSession();
   session.startTransaction();

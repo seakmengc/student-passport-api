@@ -23,7 +23,7 @@ export class StudentOfficeService {
     private readonly emailService: EmailService,
   ) {}
 
-  findAll(userId: string, officeIds: string[]) {
+  async findAll(userId: string, officeIds: string[]) {
     const query = {
       user: userId,
     };
@@ -32,7 +32,17 @@ export class StudentOfficeService {
       query['office'] = { $in: officeIds };
     }
 
-    return this.studentOfficeModel.find(query);
+    const res = await this.studentOfficeModel
+      .find(query)
+      .populate('office', 'parent');
+
+    return res.map((each: any) => {
+      return {
+        ...each.toJSON(),
+        office: each.office._id,
+        parent: each.office.parent,
+      };
+    });
   }
 
   async firstOrCreate(userId: string, officeId: string) {

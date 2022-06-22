@@ -1,7 +1,13 @@
 import { AuthenticationService } from 'src/modules/auth/services/authentication.service';
 import { Role, User } from 'src/modules/user/entities/user.entity';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import { Injectable } from '@nestjs/common';
+import {
+  CacheInterceptor,
+  CacheKey,
+  CacheTTL,
+  Injectable,
+  UseInterceptors,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { RedisService } from '@liaoliaots/nestjs-redis';
@@ -22,6 +28,7 @@ export class LeaderboardService {
     // const size = 15;
     // const start = (parseInt(paginationDto?.page ?? '1') - 1) * size;
     // const stop = start + size - 1; //inclusive
+    console.log('test');
 
     const usersScoresRedis =
       (await this.rebuildSortedSet()) ??
@@ -31,7 +38,7 @@ export class LeaderboardService {
 
     const usersScores = {};
     for (let index = 0; index < usersScoresRedis.length; index += 2) {
-      usersScores[usersScoresRedis[index]] = parseInt(
+      usersScores[usersScoresRedis[index]] = Math.floor(
         usersScoresRedis[index + 1],
       );
     }
@@ -64,7 +71,6 @@ export class LeaderboardService {
   }
 
   async rebuildSortedSet() {
-    await this.redisService.getClient().del(this.redisKey);
     if (await this.redisService.getClient().exists(this.redisKey)) {
       return null;
     }
@@ -78,7 +84,7 @@ export class LeaderboardService {
     );
 
     const usersScores = users.flatMap((user) => [
-      user.student.officesCompleted.length,
+      user.student.officesCompleted.length + '.' + (9999999999999 - Date.now()),
       user.id,
     ]);
 
@@ -86,7 +92,7 @@ export class LeaderboardService {
 
     return users.flatMap((user) => [
       user.id,
-      user.student.officesCompleted.length,
+      user.student.officesCompleted.length + '.' + (9999999999999 - Date.now()),
     ]);
   }
 

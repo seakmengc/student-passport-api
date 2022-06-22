@@ -34,7 +34,7 @@ export class StudentOfficeService {
 
     const res = await this.studentOfficeModel
       .find(query)
-      .populate('office', 'parent');
+      .populate('office', '_id parent');
 
     return res.map((each: any) => {
       return {

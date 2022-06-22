@@ -6,6 +6,7 @@ import {
   Logger,
   MiddlewareConsumer,
   RequestMethod,
+  CacheModule,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -75,6 +76,12 @@ import { TelescopeModule } from './modules/telescope/telescope.module';
     MulterModule.register({
       dest: './storage/tmp',
     }),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 30, // seconds
+      max: 10, // maximum number of items in cache
+    }),
+
     // ServeStaticModule.forRoot({
     //   rootPath: join(resolve('./'), 'storage/public'),
     // }),

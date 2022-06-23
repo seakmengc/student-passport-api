@@ -1,13 +1,7 @@
 import { AuthenticationService } from 'src/modules/auth/services/authentication.service';
 import { Role, User } from 'src/modules/user/entities/user.entity';
 import { PaginationDto } from '../../common/dto/pagination.dto';
-import {
-  CacheInterceptor,
-  CacheKey,
-  CacheTTL,
-  Injectable,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { RedisService } from '@liaoliaots/nestjs-redis';
@@ -28,7 +22,6 @@ export class LeaderboardService {
     // const size = 15;
     // const start = (parseInt(paginationDto?.page ?? '1') - 1) * size;
     // const stop = start + size - 1; //inclusive
-    console.log('test');
 
     const usersScoresRedis =
       (await this.rebuildSortedSet()) ??

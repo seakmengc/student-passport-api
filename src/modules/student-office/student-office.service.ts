@@ -36,13 +36,13 @@ export class StudentOfficeService {
 
     const res = await this.studentOfficeModel
       .find(query)
-      .populate('office', '_id parent');
+      .populate('office', 'parent');
 
     return res.map((each: any) => {
       return {
         ...each.toJSON(),
-        office: each.office._id,
-        parent: each.office.parent,
+        office: each.office?._id,
+        parent: each.office?.parent,
       };
     });
   }

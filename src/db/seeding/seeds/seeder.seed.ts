@@ -13,10 +13,10 @@ async function run(): Promise<void> {
   const STORES = {
     EmailSeeder,
     UserSeeder,
-    UploadSeeder,
-    OfficeSeeder,
-    QuestSeeder,
-    StudentQuestSeeder,
+    // UploadSeeder,
+    // OfficeSeeder,
+    // QuestSeeder,
+    // StudentQuestSeeder,
   };
 
   config({

@@ -29,7 +29,7 @@ export class UserSeeder {
         role: Role.ADMIN,
       }),
       new UserFactory(faker).create({
-        email: 'schheang4@paragoniu.edu.kh',
+        email: 'raymondc0603@gmail.com',
         role: Role.STUDENT,
         student: new Student(),
       }),

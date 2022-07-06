@@ -163,8 +163,9 @@ export class StudentQuestService {
     payload: TokenPayload,
   ) {
     const filter = {
-      status: StudentQuestStatus.PENDING,
+      approvedBy: { $exists: 1 },
     };
+    // status: StudentQuestStatus.PENDING,
 
     if (payload.role !== Role.SUPER_ADMIN) {
       filter['office'] = {
@@ -176,7 +177,7 @@ export class StudentQuestService {
 
     const queryBuilder = this.studentQuestModel
       .find(filter)
-      .sort('id')
+      .sort('status')
       .populate('office', 'name')
       .populate('user', 'firstName lastName')
       .populate('quest', 'quest');

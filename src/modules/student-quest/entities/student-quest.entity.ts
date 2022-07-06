@@ -9,12 +9,12 @@ import { StudentOffice } from 'src/modules/student-office/entities/student-offic
 import { Office } from 'src/modules/office/entities/office.entity';
 
 export enum StudentQuestStatus {
-  PENDING = 'pending',
-  APPROVED = 'approved',
-  REJECTED = 'rejected',
+  PENDING = 1,
+  REJECTED = 2,
+  APPROVED = 3,
 }
 
-@Schema()
+@Schema({ timestamps: true })
 export class StudentQuest {
   _id: mongoose.Types.ObjectId;
 
@@ -71,6 +71,13 @@ StudentQuestSchema.index({ user: 1, quest: 1 }, { unique: true });
 StudentQuestSchema.methods.toJSON = function () {
   return {
     ...this.toObject(),
-    canSubmit: this.status === 'rejected',
+    statusNumber: this.status,
+    status:
+      this.status === 1
+        ? 'pending'
+        : this.status === 2
+        ? 'rejected'
+        : 'approved',
+    canSubmit: this.status === StudentQuestStatus.REJECTED,
   };
 };

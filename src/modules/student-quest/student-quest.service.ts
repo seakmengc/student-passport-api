@@ -54,7 +54,8 @@ export class StudentQuestService {
 
       studentOffice.quests[key]['canSubmit'] =
         !studentOffice.quests[key]['submission'] ||
-        studentOffice.quests[key]['submission'].status === 'rejected';
+        studentOffice.quests[key]['submission'].status ===
+          StudentQuestStatus.REJECTED;
     }
 
     return studentOffice;
@@ -163,7 +164,10 @@ export class StudentQuestService {
     payload: TokenPayload,
   ) {
     const filter = {
-      approvedBy: { $exists: 1 },
+      $or: [
+        { approvedBy: { $exists: 0 }, approvedAt: { $exists: 0 } },
+        { approvedBy: { $exists: 1 }, approvedAt: { $exists: 1 } },
+      ],
     };
     // status: StudentQuestStatus.PENDING,
 

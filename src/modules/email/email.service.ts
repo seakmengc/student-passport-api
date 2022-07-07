@@ -65,6 +65,11 @@ export class EmailService {
   }
 
   async sendMail(sendEmailDto: SendEmailDto) {
+    if (sendEmailDto.to.toString().split('@')[1]?.startsWith('example')) {
+      Logger.log('Skipped sending email to ' + sendEmailDto.to.toString());
+      return;
+    }
+
     const email = await this.emailModel
       .findOne({
         name: sendEmailDto.name,

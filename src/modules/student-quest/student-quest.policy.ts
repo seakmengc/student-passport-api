@@ -5,27 +5,39 @@ import { Role } from '../user/entities/user.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { Office } from '../office/entities/office.entity';
+import { StudentQuest } from './entities/student-quest.entity';
 
 @Injectable()
 export class StudentQuestPolicy {
   constructor(
     @InjectModel(Quest.name) private questModel: mongoose.Model<Quest>,
+    @InjectModel(StudentQuest.name)
+    private studentQuestModel: mongoose.Model<StudentQuest>,
     @InjectModel(Office.name) private officeModel: mongoose.Model<Office>,
   ) {}
 
-  async superAdminOrOfficeAdmin(authPayload: TokenPayload, questId?: string) {
+  async superAdminOrOfficeAdmin(
+    authPayload: TokenPayload,
+    studentQuestId?: string,
+  ) {
     if (authPayload.role === Role.SUPER_ADMIN) {
       return;
     }
 
     this.throwUnauthorizedUnless(authPayload.role === Role.ADMIN);
 
-    if (questId) {
-      const quest = await this.questModel.findById(questId, { office: 1 });
+    if (studentQuestId) {
+      const studentQuest = await this.studentQuestModel
+        .findById(studentQuestId, { _id: 1 })
+        .populate('quest', 'office');
+
+      if (!studentQuest) {
+        this.throwUnauthorized();
+      }
 
       this.throwUnauthorizedUnless(
         (await this.officeModel.exists({
-          _id: quest.office,
+          _id: studentQuest.quest.office,
           admins: authPayload.sub,
         })) === null,
       );

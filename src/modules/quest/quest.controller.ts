@@ -12,8 +12,8 @@ import {
 import { QuestService } from './quest.service';
 import { CreateQuestDto } from './dto/create-quest.dto';
 import { UpdateQuestDto } from './dto/update-quest.dto';
-import { QuestPolicy } from './quest.policy';
 import { AuthPayload } from 'src/decorators/auth-payload.decorator';
+import { OfficePolicy } from '../office/office.policy';
 
 @ApiBearerAuth()
 @ApiTags('Quest')
@@ -21,12 +21,12 @@ import { AuthPayload } from 'src/decorators/auth-payload.decorator';
 export class QuestController {
   constructor(
     private readonly questService: QuestService,
-    private readonly questPolicy: QuestPolicy,
+    private readonly officePolicy: OfficePolicy,
   ) {}
 
   @Post()
   async create(@Body() createQuestDto: CreateQuestDto, @AuthPayload() payload) {
-    await this.questPolicy.superAdminOrOfficeAdmin(
+    await this.officePolicy.superAdminOrOfficeAdmin(
       payload,
       createQuestDto.office,
     );
@@ -36,7 +36,12 @@ export class QuestController {
 
   @Get('/office/:officeId')
   findByOffice(@Param('officeId') officeId: string) {
-    return this.questService.findByOffice(officeId).exec();
+    return this.questService.findByOffice(officeId).populate({
+      path: 'office',
+      populate: {
+        path: 'parent',
+      },
+    });
   }
 
   @Get('/ids')
@@ -44,6 +49,11 @@ export class QuestController {
     const arrIds = ids.split(',');
 
     return this.questService.findByIds(arrIds);
+  }
+
+  @Get(':id/admin')
+  async findOneForUpdate(@Param('id') id: string) {
+    return this.questService.findOne(id).lean();
   }
 
   @Get(':id')
@@ -57,7 +67,7 @@ export class QuestController {
     @Body() updateQuestDto: UpdateQuestDto,
     @AuthPayload() payload,
   ) {
-    await this.questPolicy.superAdminOrOfficeAdmin(
+    await this.officePolicy.superAdminOrOfficeAdmin(
       payload,
       (
         await this.questService.findOne(id, { office: true })
@@ -69,7 +79,7 @@ export class QuestController {
 
   @Delete(':id')
   async remove(@Param('id') id: string, @AuthPayload() payload) {
-    await this.questPolicy.superAdminOrOfficeAdmin(
+    await this.officePolicy.superAdminOrOfficeAdmin(
       payload,
       (
         await this.questService.findOne(id, { office: true })

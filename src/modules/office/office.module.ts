@@ -11,5 +11,6 @@ import { OfficePolicy } from './office.policy';
   ],
   controllers: [OfficeController],
   providers: [OfficeService, OfficePolicy],
+  exports: [OfficePolicy],
 })
 export class OfficeModule {}

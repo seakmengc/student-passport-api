@@ -36,7 +36,6 @@ export class ResetPasswordService {
       .orFail();
 
     const otp = randomInt(100000, 999999).toString();
-    Logger.debug({ otp });
     await this.resetPasswordModel.deleteOne({ userId: user.id });
 
     //send email with token
@@ -68,7 +67,6 @@ export class ResetPasswordService {
     const resetPw = await this.resetPasswordModel.findOne({
       user: user,
     });
-    console.log({ resetPw, user });
 
     if (!resetPw) {
       throw new BadRequestException('OTP is invalid.');
@@ -92,12 +90,11 @@ export class ResetPasswordService {
       throw new BadRequestException('OTP is invalid or expired.');
     }
 
-    await this.userModel.updateOne(
-      {
-        id: resetPw.user,
-      },
-      { password: await hash(resetPasswordDto.newPassword, this.hashRound) },
-    );
+    console.log(resetPasswordDto);
+
+    await this.userModel.findByIdAndUpdate(resetPw.user, {
+      password: await hash(resetPasswordDto.newPassword, this.hashRound),
+    });
 
     await resetPw.remove();
   }

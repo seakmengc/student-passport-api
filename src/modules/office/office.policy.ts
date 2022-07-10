@@ -19,13 +19,36 @@ export class OfficePolicy {
     this.throwUnauthorizedUnless(authPayload.role === Role.ADMIN);
 
     if (officeId) {
-      this.throwUnauthorizedUnless(
-        (await this.model.exists({
-          _id: officeId,
-          admins: authPayload.sub,
-        })) === null,
+      const res = await this.isAdminOf(authPayload.sub, officeId);
+      if (res.allow) {
+        return;
+      }
+
+      if (res.office?.parent === null) {
+        this.throwUnauthorized();
+      }
+
+      const resParent = await this.isAdminOf(
+        authPayload.sub,
+        res.office?.parent.id,
       );
+
+      if (!resParent.allow) {
+        this.throwUnauthorized();
+      }
     }
+  }
+
+  protected async isAdminOf(userId: string, officeId: string) {
+    const office = await this.model.findById(officeId, {
+      parent: 1,
+      admins: 1,
+    });
+
+    return {
+      allow: office.admins.find((user) => user.id === userId) !== null,
+      office: office,
+    };
   }
 
   protected throwUnauthorized() {

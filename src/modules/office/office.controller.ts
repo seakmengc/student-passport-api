@@ -64,7 +64,8 @@ export class OfficeController {
   async findOne(@Param('id') id: string) {
     const office = await this.officeService
       .findOne(id)
-      .populate('admins stamp');
+      .populate('admins stamp')
+      .populate('parent', 'admins');
 
     return {
       ...office.toJSON(),

@@ -26,22 +26,24 @@ export class StudentQuestPolicy {
 
     this.throwUnauthorizedUnless(authPayload.role === Role.ADMIN);
 
-    if (studentQuestId) {
-      const studentQuest = await this.studentQuestModel
-        .findById(studentQuestId, { _id: 1 })
-        .populate('quest', 'office');
-
-      if (!studentQuest) {
-        this.throwUnauthorized();
-      }
-
-      this.throwUnauthorizedUnless(
-        (await this.officeModel.exists({
-          _id: studentQuest.quest.office,
-          admins: authPayload.sub,
-        })) === null,
-      );
+    if (!studentQuestId) {
+      this.throwUnauthorized();
     }
+
+    const studentQuest = await this.studentQuestModel
+      .findById(studentQuestId, { _id: 1 })
+      .populate('office', 'parent');
+
+    if (!studentQuest) {
+      this.throwUnauthorized();
+    }
+
+    this.throwUnauthorizedUnless(
+      (await this.officeModel.exists({
+        _id: studentQuest.office.id,
+        admins: authPayload.sub,
+      })) !== null,
+    );
   }
 
   protected throwUnauthorized() {

@@ -36,7 +36,7 @@ export class Upload {
     uploadId: string,
     uploadModel: mongoose.Model<UploadDocument>,
   ) {
-    return uploadModel.updateOne(
+    return uploadModel.findOneAndUpdate(
       { _id: uploadId, completed: false },
       { completed: true },
     );
